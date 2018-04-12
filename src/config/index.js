@@ -12,9 +12,10 @@ const isTest = () => {
 let def = {};
 
 let dev = {
-    INTERFACE: "http://172.16.4.12:8082/agenthouseWeb/",
-    UPLOAD_IMAGE: `http://172.16.4.12:8082/agenthouseWeb/CommonController/uploadFile`,
-    IMAGE_PATH: "http://172.16.4.12:8088/upload_image/",
+    INTERFACE: "http://172.16.40.206:9091/",
+    UPLOAD_IMAGE: `http://172.16.40.206:9091/imgupload`,
+    UPLOAD_EDITOR_IMAGE: `http://172.16.40.206:9091/detailimgupload`,
+    UPLOAD_FILE: `http://172.16.40.206:9091/HbfileSave`,
 };
 
 let test = {};

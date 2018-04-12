@@ -71,6 +71,7 @@
                             <el-upload
                                 class="avatar-uploader"
                                 :action="UPLOAD_IMAGE"
+                                :data="{pid: mid}"
                                 :show-file-list="false"
                                 :on-success="(...arr)=>{
                                     handleAvatarSuccess(index, ...arr);
@@ -104,6 +105,7 @@
                             <el-upload
                                 class="avatar-uploader"
                                 :action="UPLOAD_IMAGE"
+                                :data="{pid: mid}"
                                 :show-file-list="false"
                                 :on-success="handleEntrySuccess"
                             >
@@ -184,7 +186,8 @@
                             <el-form-item label="文件列表" key="file">
                                 <el-upload
                                     class="upload-demo"
-                                    :action="UPLOAD_IMAGE"
+                                    :action="UPLOAD_FILE"
+                                    :data="{pid: mid}"
                                     :on-success="fileUploadSuccess"
                                     :on-remove="removeFile"
                                     multiple
@@ -199,12 +202,13 @@
                             <el-form-item label="文件列表" key="trip">
                                 <el-upload
                                     class="upload-demo"
-                                    :action="UPLOAD_IMAGE"
+                                    :action="UPLOAD_FILE"
+                                    :data="{pid: mid}"
                                     :on-success="scheduleUploadSuccess"
                                     :on-remove="removeSchedule"
                                     :limit="1"
                                     :file-list="entryItem.scheduleFile">
-                                    <el-button size="small" type="primary">点击上传</el-button>
+                                    <el-button size="small" type="primary" v-if="entryItem.scheduleFile.length === 0">点击上传</el-button>
                                 </el-upload>
                             </el-form-item>
                         </template>
@@ -221,6 +225,8 @@
     export default {
         data() {
             return {
+                mid: this.$route.query.mid,
+
                 entryOptions: [{
                     label: '基础类型',
                     options: [{
@@ -247,7 +253,6 @@
                     }]
                 }],
 
-                // articleList: [],
             }
         },
 
@@ -273,7 +278,7 @@
             },
 
             handleAvatarSuccess(index, res, file) {
-                this.carouselArray[index].imageUrl = this.concatFileUrl(res.data.fileNameList[0]);
+                this.carouselArray[index].imageUrl = res.Data.link;
             },
             /*轮播图控制结束*/
 
@@ -297,49 +302,55 @@
 
             /*九宫格控制*/
             handleEntrySuccess( res, file){
-                this.entryItem.icon = this.concatFileUrl(res.data.fileNameList[0]);
+                this.entryItem.icon = res.Data.link;
             },
             /*九宫格控制结束*/
 
             /*文件列表控制*/
             fileUploadSuccess(res, file, fileList){
-                const fileName = res.data.fileNameList[0];
+                const {Data: {Filename, Filepath, Id}} = res;
+                const fileName = Filename;
                 this.entryItem.fileList = fileList.map(item => {
                     if(fileName.includes(item.name)){
                         item.name = fileName;
-                        item.url = this.concatFileUrl(fileName);
+                        item.url = Filepath;
+                        item.id = Id;
                     }
                     return item;
                 });
-
-                console.log("上传后：",this.entryItem.fileList)
             },
 
             removeFile(file, fileList){
                 this.entryItem.fileList = this.entryItem.fileList.filter(item => {
                     return !item.name.includes(file.name);
                 });
-
-                console.log("删除后：",this.entryItem.fileList)
             },
             /*文件列表控制结束*/
 
             /*日程文件控制*/
             scheduleUploadSuccess(res, file, fileList){
-                const fileName = res.data.fileNameList[0];
+                const {Data: {Filename, Filepath, Id}} = res;
 
                 if(!this.entryItem.scheduleFile){
                     this.entryItem.scheduleFile = [];
                 }
 
                 this.entryItem.scheduleFile = [{
-                    name: fileName,
-                    url: this.concatFileUrl(fileName),
+                    name: Filename,
+                    url: Filepath,
+                    id: Id,
                 }];
             },
 
-            removeSchedule(file, fileList){
-                this.entryItem.scheduleFile = [];
+            removeSchedule(file, fileList) {
+                this.$get(`HbfileDel?id=${this.entryItem.scheduleFile[0].id}`).then(res => {
+                    if (res.Code === 200) {
+                        this.$showMsgTip(`删除成功`);
+                        this.entryItem.scheduleFile = [];
+                    } else {
+                        this.$showErrorTip(`删除失败`)
+                    }
+                });
             },
             /*日程文件控制结束*/
         },

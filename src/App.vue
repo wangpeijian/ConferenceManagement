@@ -9,7 +9,7 @@
 
         data() {
             return {
-                isLogin: this.getSession(this.KEYS.USER_INFO) !== null,
+                isLogin: this.$getSession(this.KEYS.USER_INFO) !== null,
                 isHideMenu: false,
             }
         },

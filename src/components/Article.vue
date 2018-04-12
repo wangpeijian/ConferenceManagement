@@ -30,13 +30,13 @@
 
         <!--基本属性-->
         <el-card class="box-card">
-            <div  v-for="item in articleList" :key="item.id">
+            <!--<div  v-for="item in articleList" :key="item.id">
                 <router-link :to="`/main/article/edit?mid=${mid}&aid=${item.id}`">
                     <div class="article-item">
                         {{item.title}}
                     </div>
                 </router-link>
-            </div>
+            </div>-->
 
             <router-link :to="`/main/article/edit?mid=${mid}`">
                 <el-button class="btn-add" type="primary"  size="mini" icon="el-icon-plus" circle></el-button>
@@ -54,22 +54,24 @@
         },
 
         created() {
-            const articleList = [{
-                title: "测试文章1",
-                id: "1"
-            },{
-                title: "测试文章2",
-                id: "2"
-            },{
-                title: "测试文章3",
-                id: "3"
-            },{
-                title: "测试文章4",
-                id: "4"
-            }];
+            this.$get(`HandBookDetailList?pid=${this.mid}`).then(res=>{
+                const {Data} = res;
+                if(Data){
+                    const articleList = Data.map(item => {
+                        return {
+                            title: item.Pagename,
+                            id: item.Id,
+                        }
+                    });
 
-            this.$store.commit("initArticleList", {
-                articleList,
+                    this.$store.commit("initArticleList", {
+                        articleList,
+                    });
+                }else {
+                    this.$store.commit("initArticleList", {
+                        articleList: []
+                    });
+                }
             })
         },
 

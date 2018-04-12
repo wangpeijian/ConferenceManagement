@@ -61,7 +61,7 @@
         height: 200px;
         margin: 0 20px 20px 20px;
         position: relative;
-
+        padding: 10px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -91,6 +91,20 @@
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .footer {
+        padding: 30px 0;
+        width: 100%;
+        text-align: center;
+    }
+
+    .footer .el-button{
+        width: 200px;
+    }
+
+    .add-input{
+        width: 100%;
     }
 </style>
 
@@ -124,78 +138,104 @@
 
             <div class="meetings-list">
 
-                <div class="meeting-item" v-for="item in meetingData" :key="item.id">
-                    {{item.name}}
+                <div class="meeting-item" v-for="item in meetingData" :key="item.Id">
+                    {{item.Hbname}}
 
                     <div class="hover-content">
                         <div class="btn-box">
                             <el-tooltip class="item" effect="dark" content="发布" :enterable="false" placement="top">
                                 <el-button icon="el-icon-upload" type="primary" circle
-                                           @click="doRelease(item.id)"></el-button>
+                                           @click="doRelease(item.Id)"></el-button>
                             </el-tooltip>
                         </div>
 
                         <div class="btn-box">
                             <el-tooltip class="item" effect="dark" content="预览" :enterable="false" placement="top">
                                 <el-button icon="el-icon-view" type="success" circle
-                                           @click="doPreview(item.id)"></el-button>
+                                           @click="doPreview(item.Id)"></el-button>
                             </el-tooltip>
                         </div>
 
                         <div class="btn-box">
                             <el-tooltip class="item" effect="dark" content="编辑" :enterable="false" placement="top">
                                 <el-button icon="el-icon-edit-outline" type="warning" circle
-                                           @click="doEdit(item.id)"></el-button>
+                                           @click="doEdit(item.Id)"></el-button>
                             </el-tooltip>
                         </div>
 
                         <div class="btn-box">
                             <el-tooltip class="item" effect="dark" content="删除" :enterable="false" placement="top">
                                 <el-button icon="el-icon-delete" type="danger" circle
-                                           @click="doDelete(item.id)"></el-button>
+                                           @click="doDelete(item.Id)"></el-button>
                             </el-tooltip>
                         </div>
                     </div>
                 </div>
-
             </div>
+
+            <footer class="footer">
+                <el-button type="success" @click="addDialogVisible = true">新增会议</el-button>
+            </footer>
         </section>
+
+        <!--发布提示框-->
+        <el-dialog
+            title="发布"
+            :visible.sync="releaseDialogVisible"
+            width="30%"
+            >
+            <span>访问地址:{{releaseId}}</span>
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="releaseDialogVisible = false">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <!--新增提示框-->
+        <el-dialog
+            title="新增会议"
+            :visible.sync="addDialogVisible"
+            width="30%"
+        >
+            <el-input
+                class="add-input"
+                placeholder="请输入会议名称"
+                v-model="meetingName"
+                >
+            </el-input>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="doAdd" :disabled="!meetingName">确 定</el-button>
+            </span>
+        </el-dialog>
+
+        <!--预览提示框-->
+        <preview :previewDialogVisible="previewDialogVisible" :url="previewUrl" @close="previewDialogVisible = false" />
     </div>
 </template>
 
 <script>
+    import preview from '../../components/Preview'
+
     export default {
         data() {
             return {
                 searchText: "",
 
-                meetingData: [{
-                    id: "1",
-                    name: '1',
-                }, {
-                    id: "2",
-                    name: '2',
-                }, {
-                    id: "3",
-                    name: '3',
-                }, {
-                    id: "4",
-                    name: '4',
-                }, {
-                    id: "5",
-                    name: '5',
-                }, {
-                    id: "6",
-                    name: '6',
-                }, {
-                    id: "7",
-                    name: '7',
-                }]
+                meetingData: [],
+
+                releaseDialogVisible: false,
+                releaseId: '',
+
+                addDialogVisible: false,
+                meetingName: '',
+
+                previewDialogVisible: false,
+                previewUrl: '',
             }
         },
 
         created() {
-
+            this.doSearch();
         },
 
         mounted() {
@@ -204,15 +244,19 @@
 
         methods: {
             doSearch() {
-                console.log(`搜索关键字：`, this.searchText);
+                this.$get(`HandBookList?param=${this.searchText}`).then(({Data}) => {
+                    this.meetingData = Data;
+                });
             },
 
             doRelease(id) {
-
+                this.releaseDialogVisible = true;
+                this.releaseId = id;
             },
 
             doPreview(id) {
-
+                this.previewDialogVisible = true;
+                this.previewUrl = id;
             },
 
             doEdit(id) {
@@ -220,12 +264,36 @@
             },
 
             doDelete(id) {
-                this.deleteConfirm(()=>{
-                    console.log(`删除：`, id);
+                this.$deleteConfirm(() => {
+                    this.$get(`HandBookDel?id=${id}`).then(({Code, Data, Msg}) =>{
+                        if(Code === 200){
+                            this.$showMsgTip(`删除成功`);
+                            this.doSearch();
+                        }else {
+                            this.$showErrorTip(`删除失败`)
+                        }
+                    })
+                })
+            },
+
+            doAdd(){
+                this.$post(`SaveHandBook`, {
+                    Hbname: this.meetingName
+                }).then(({Code, Msg, data}) => {
+                    if(Code === 200){
+                        this.addDialogVisible = false;
+                        this.$showMsgTip(`创建成功`);
+                        this.doSearch();
+                        // this.$router.push(`/main/meeting/edit?mid=${data.id}`);
+                    }else{
+                        this.$showErrorTip(Msg);
+                    }
                 })
             },
         },
 
-        components: {}
+        components: {
+            preview
+        }
     }
 </script>

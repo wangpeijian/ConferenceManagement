@@ -8,6 +8,8 @@ export default {
         carouselArray: [],
 
         articleList: [],
+
+
     },
     mutations: {
         initArticleList(state, {articleList}){

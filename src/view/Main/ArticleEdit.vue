@@ -10,6 +10,8 @@
 
     .tab-aside {
         flex-grow: 1;
+        max-width: 300px;
+        min-width: 300px;
         padding-right: 20px;
     }
 
@@ -21,7 +23,12 @@
         position: relative;
     }
 
-    .insert-btn {
+    .link-btn {
+        color: #409EFF;
+        cursor: pointer;
+    }
+
+    .insert-btn, .copy-btn {
         color: #409EFF;
         display: none;
         position: absolute;
@@ -30,7 +37,15 @@
         text-decoration: underline;
     }
 
+    .copy-btn {
+        right: 50px;
+    }
+
     .article-item:hover .insert-btn {
+        display: inline-block;
+    }
+
+    .article-item:hover .copy-btn {
         display: inline-block;
     }
 
@@ -40,8 +55,15 @@
         text-align: center;
     }
 
-    .el-button{
+    .el-button {
         width: 200px;
+    }
+
+    .form-box {
+        width: 400px;
+        margin: 30px auto;
+        border: 1px solid #ccc;
+        padding: 20px;
     }
 </style>
 
@@ -61,61 +83,51 @@
                     </el-tab-pane>
                     <el-tab-pane label="插入文章" name="article">
                         <div v-for="item in articleList" :key="item.id" class="article-item">
-                            {{item.title}}
+                            <span class="link-btn" @click="link(item.id)">{{item.title}}</span>
 
-                            <span class="insert-btn" @click="insertArticle(item.id, item.title)">插入链接</span>
+                            <span class="copy-btn btn" :data-clipboard-text="`#/article?id=${item.id}`">复制</span>
+                            <span class="insert-btn" @click="insertArticle(item.id, item.title)">插入</span>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
             </div>
 
-            <!-- <section id="editor" class="editor-box"></section>-->
             <froala class="editor-box" v-if="config" :tag="'textarea'" :config="config" v-model="model"></froala>
         </div>
 
+        <el-form class="form-box" ref="form" :model="form" label-width="80px">
+            <el-form-item label="文章标题">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+        </el-form>
+
         <footer class="footer">
-            <el-button type="success" @click="dialogVisible = true">预览</el-button>
+            <el-button type="success" @click="previewDialogVisible = true">预览</el-button>
             <el-button type="primary" @click="submit">保存</el-button>
+            <el-button type="danger" @click="remove" v-show="aid">删除</el-button>
             <el-button type="info" @click="()=>{this.$router.back()}">返回</el-button>
         </footer>
 
-        <el-dialog
-            title=""
-            :visible.sync="dialogVisible"
-            width="30%"
-            :before-close="handleClose">
-            <span>这是一段信息</span>
-        </el-dialog>
+        <!--预览提示框-->
+        <preview :previewDialogVisible="previewDialogVisible" :url="previewUrl" @close="previewDialogVisible = false"/>
     </div>
 </template>
 
 <script>
+    import preview from '../../components/Preview'
     import styleTemplate from '../../components/StyleTemplate';
-
     import VueFroala from 'vue-froala-wysiwyg';
+    import Clipboard from 'clipboard';
 
     export default {
         data() {
-            const UPLOAD_IMAGE = this.UPLOAD_IMAGE;
+            const UPLOAD_EDITOR_IMAGE = this.UPLOAD_EDITOR_IMAGE;
 
             return {
                 aid: this.$route.query.aid,
+                mid: this.$route.query.mid,
 
                 activeName: 'style',
-
-                articleList: [{
-                    title: "测试文章1",
-                    id: "1"
-                }, {
-                    title: "测试文章2",
-                    id: "2"
-                }, {
-                    title: "测试文章3",
-                    id: "3"
-                }, {
-                    title: "测试文章4",
-                    id: "4"
-                }],
 
                 $editor: null,
 
@@ -125,7 +137,7 @@
                     heightMin: 480,
                     widthMin: 800,
                     height: 480,
-                    width: 800,
+                    width: '100%',
                     direction: 'ltr',
                     toolbarButtons: ['fullscreen', '|', 'insertLink', 'insertImage', 'insertTable', '|',
                         'quote', 'insertHR', 'subscript', 'superscript', 'undo', 'redo', '|', 'bold', 'italic',
@@ -134,7 +146,7 @@
                         'outdent', 'indent', 'clearFormatting', 'insertimg'],
                     allowedImageTypes: ["jpeg", "jpg", "png", "gif"],
                     imageAllowedTypes: ['jpeg', 'jpg', 'png', 'gif'],
-                    // imageUploadURL: UPLOAD_IMAGE,
+                    imageUploadURL: UPLOAD_EDITOR_IMAGE,
                     events: {
                         'froalaEditor.initialized': (e, editor) => {
                             this.$editor = editor;
@@ -145,21 +157,110 @@
 
                 model: null,
 
-                dialogVisible: false,
+                previewDialogVisible: false,
+
+                form: {
+                    name: '',
+                },
+
+                previewUrl: '',
             }
         },
 
         created() {
-            console.log("当前文章id", this.aid)
+            this.init();
         },
 
         mounted() {
-
+            const clipboard = new Clipboard('.btn');
+            clipboard.on('success', (e) => {
+                this.$showMsgTip("复制成功")
+            });
         },
 
         methods: {
+            init() {
+                this.$get(`HandBookDetailList?pid=${this.mid}`).then(res=>{
+                    const {Data} = res;
+                    if(Data){
+                        const articleList = Data.map(item => {
+                            return {
+                                title: item.Pagename,
+                                id: item.Id,
+                            }
+                        });
+
+                        this.$store.commit("initArticleList", {
+                            articleList,
+                        });
+                    }else{
+                        this.$store.commit("initArticleList", {
+                            articleList: []
+                        });
+                    }
+                });
+
+                if (this.aid) {
+                    this.$get(`HandBookDetailbyId?id=${this.aid}`).then(res => {
+                        if (res.Code === 200) {
+                            const {Pagename, Pagedetail} = res.Data;
+                            this.form.name = Pagename;
+                            this.model = Pagedetail;
+                        }
+                    })
+                }
+            },
+
             submit() {
-                console.log("当前文章id", this.model)
+                this.$post(`SaveHandBookDetail`, {
+                    Id: this.aid ? ~~this.aid : 0,
+                    Pid: ~~this.mid,
+                    Pagename: this.form.name,
+                    Pagedetail: this.model,
+                }).then(res => {
+                    if (res.Code === 200) {
+                        this.$showMsgTip(`保存成功`);
+                        this.$router.go(-1);
+                    } else {
+                        this.$showErrorTip(`保存失败`);
+                    }
+                })
+            },
+
+            remove() {
+                this.$deleteConfirm(() => {
+                    this.$get(`HandBookDetailDel?id=${this.aid}`).then(res => {
+                        if (res.Code === 200) {
+                            let id = 0;
+                            for(let i =0 ; i < this.$store.state.attribute.articleList.length; i++){
+                                let item = this.$store.state.attribute.articleList[i];
+                                if(item.id === this.aid){
+                                    break;
+                                }
+                                id = item.id;
+                            }
+
+                            if(id === 0){
+                                if(this.$store.state.attribute.articleList.length === 1){
+                                    this.$router.go(-1);
+                                }else{
+                                    id = this.$store.state.attribute.articleList[0];
+                                }
+                            }
+
+                            this.link(id)
+
+                        } else {
+                            this.$showErrorTip(`删除失败`);
+                        }
+                    });
+                });
+            },
+
+            link(aid) {
+                this.aid = aid;
+                this.$router.replace(`/main/article/edit?mid=${this.mid}&aid=${aid}`);
+                this.init();
             },
 
             insertArticle(id, title) {
@@ -173,11 +274,17 @@
             insertHTML(html) {
                 this.$editor.html.insert(html, true)
             }
+        },
 
+        computed: {
+            articleList() {
+                return this.$store.state.attribute.articleList;
+            }
         },
 
         components: {
             styleTemplate,
+            preview,
         }
     }
 </script>

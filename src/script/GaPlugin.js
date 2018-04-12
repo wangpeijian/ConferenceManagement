@@ -83,12 +83,14 @@ export default class {
          * @type {string}
          */
         Vue.prototype.UPLOAD_IMAGE = config.UPLOAD_IMAGE;
+        Vue.prototype.UPLOAD_EDITOR_IMAGE = config.UPLOAD_EDITOR_IMAGE;
+        Vue.prototype.UPLOAD_FILE = config.UPLOAD_FILE;
 
         /**
          * 获取session中的对象
          * @param key
          */
-        Vue.prototype.getSession = key => {
+        Vue.prototype.$getSession = key => {
             let value = window.sessionStorage.getItem(key);
 
             try {
@@ -106,7 +108,7 @@ export default class {
          * @param key
          * @param value
          */
-        Vue.prototype.setSession = (key, value) => {
+        Vue.prototype.$setSession = (key, value) => {
             if (value === undefined) {
                 window.sessionStorage.removeItem(key);
             } else {
@@ -123,7 +125,7 @@ export default class {
          * 获取storage中的对象
          * @param key
          */
-        Vue.prototype.getStorage = key => {
+        Vue.prototype.$getStorage = key => {
             let value = window.localStorage.getItem(key);
 
             try {
@@ -141,7 +143,7 @@ export default class {
          * @param key
          * @param value
          */
-        Vue.prototype.setStorage = (key, value) => {
+        Vue.prototype.$setStorage = (key, value) => {
             if (value === undefined) {
                 window.localStorage.removeItem(key);
             } else {
@@ -159,18 +161,10 @@ export default class {
          * @param url
          * @returns {Promise.<TResult>}
          */
-        Vue.prototype.get = url => {
-            let userID = "";
-            let token = "";
-            let userInfo = Vue.prototype.getSession(Vue.prototype.KEYS.USER_INFO);
-            if (userInfo) {
-                userID = userInfo.userID;
-                token = userInfo.token;
-            }
-
+        Vue.prototype.$get = url => {
             return fetch(config.INTERFACE + url, {
                 method: 'get',
-                headers: {"Content-Type": "application/json", "userID": userID, "token": token},
+                headers: {"Content-Type": "application/json"},
             }).then(function (response) {
                 return response.json();
             }).then(function (res) {
@@ -189,26 +183,17 @@ export default class {
          * @param data
          * @returns {Promise.<TResult>}
          */
-        Vue.prototype.post = (url, data = {}) => {
+        Vue.prototype.$post = (url, data = {}) => {
             let requestUrl = config.INTERFACE + url;
-            let userID = "";
-            let token = "";
-            let userInfo = Vue.prototype.getSession(Vue.prototype.KEYS.USER_INFO);
-            if (userInfo) {
-                userID = userInfo.userID;
-                token = userInfo.token;
-            }
 
             let body = JSON.stringify(data);
-            try {
-                body = new Blob([body], {type: 'application/json'})
-            } catch (e) {
-
-            }
+            // try {
+            //     body = new Blob([body], {type: 'application/json'})
+            // } catch (e) {}
 
             return fetch(requestUrl, {
                 method: 'post',
-                headers: {"Content-Type": "application/json", "userID": userID, "token": token},
+                headers: {"Content-Type": "application/json"},
                 body: body,
             }).then(function (response) {
                 return response.json();
@@ -227,7 +212,7 @@ export default class {
          * 删除操作时的弹出框
          * 封装element的confirm弹出层
          */
-        Vue.prototype.deleteConfirm = function (cb, msg = "确认删除？") {
+        Vue.prototype.$deleteConfirm = function (cb, msg = "确认删除？") {
             this.$confirm(msg, '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -243,7 +228,7 @@ export default class {
          * 封装操作的错误提示信息
          * @param msg
          */
-        Vue.prototype.showErrorTip = function (msg) {
+        Vue.prototype.$showErrorTip = function (msg) {
             this.$message.error({
                 message: msg,
                 customClass: 'form-error',
@@ -257,7 +242,7 @@ export default class {
          * @param msg
          * @param type
          */
-        Vue.prototype.showMsgTip = function (msg, type = 'success') {
+        Vue.prototype.$showMsgTip = function (msg, type = 'success') {
             this.$message({
                 message: msg,
                 type: type,
@@ -274,7 +259,7 @@ export default class {
          * @param h
          * @returns {string}
          */
-        Vue.prototype.concatFileUrl = (fileName, w, h) => {
+        Vue.prototype.$concatFileUrl = (fileName, w, h) => {
             let size = "";
             if (w !== undefined && h !== undefined) {
                 size = `/2/w/${w}/h/${h}`;
@@ -289,7 +274,7 @@ export default class {
          * @param owner
          * @param cb
          */
-        Vue.prototype.subscribe = (eventName, owner, cb) => {
+        Vue.prototype.$subscribe = (eventName, owner, cb) => {
             let queue = window.EVENT_STORAGE[eventName];
 
             if (queue === undefined) {
@@ -311,7 +296,7 @@ export default class {
          * @param owner
          * @returns {boolean}
          */
-        Vue.prototype.unsubscribe = (eventName, owner) => {
+        Vue.prototype.$unsubscribe = (eventName, owner) => {
             let queue = window.EVENT_STORAGE[eventName];
 
             if (queue === undefined) {
@@ -332,7 +317,7 @@ export default class {
          * @param parameter
          * @param cb
          */
-        Vue.prototype.broadcast = (eventName, sender, parameter, cb) => {
+        Vue.prototype.$broadcast = (eventName, sender, parameter, cb) => {
             let queue = window.EVENT_STORAGE[eventName];
             console.group("广播消息：", eventName);
 
@@ -360,7 +345,7 @@ export default class {
          *
          * @param url
          */
-        Vue.prototype.downloadFile = (url) => {
+        Vue.prototype.$downloadFile = (url) => {
             //默认在新窗口打开图片
             try {
                 window.open(url);
@@ -385,7 +370,7 @@ export default class {
          * @param file
          * @param type :  图片（pic）, 文档(file)
          */
-        Vue.prototype.fileFilter = function (file, type = "pic", size = 0) {
+        Vue.prototype.$fileFilter = function (file, type = "pic", size = 0) {
             let name = file.name;
             let arr = [];
             switch (type) {
@@ -397,7 +382,7 @@ export default class {
                     break;
             }
             if (size && file.size / 1024 > size) {
-                this.showErrorTip("上传文件过大,请上传小于300K的图片!");
+                this.$showErrorTip("上传文件过大,请上传小于300K的图片!");
                 return false;
             }
 
@@ -406,7 +391,7 @@ export default class {
                 return true;
             }
 
-            this.showErrorTip("文件类型错误");
+            this.$showErrorTip("文件类型错误");
             return false;
         };
     };

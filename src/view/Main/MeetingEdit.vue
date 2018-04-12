@@ -17,6 +17,13 @@
     .el-button{
         width: 200px;
     }
+
+    .form-box{
+        width: 400px;
+        margin: 30px auto;
+        border: 1px solid #ccc;
+        padding: 20px;
+    }
 </style>
 
 <template>
@@ -29,19 +36,20 @@
             <attribute />
         </div>
 
+        <el-form class="form-box" ref="form" :model="form" label-width="80px">
+            <el-form-item label="会议名称">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
+        </el-form>
+
         <footer class="footer">
-            <el-button type="success" @click="dialogVisible = true">预览</el-button>
+            <el-button type="success" @click="previewDialogVisible = true">预览</el-button>
             <el-button type="primary" @click="submit">保存</el-button>
             <el-button type="info" @click="()=>{this.$router.back()}">返回</el-button>
         </footer>
 
-        <el-dialog
-            title=""
-            :visible.sync="dialogVisible"
-            width="30%"
-            :before-close="handleClose">
-            <span>这是一段信息</span>
-        </el-dialog>
+        <!--预览提示框-->
+        <preview :previewDialogVisible="previewDialogVisible" :url="previewUrl" @close="previewDialogVisible = false" />
     </div>
 
 </template>
@@ -50,18 +58,62 @@
     import structure from '../../components/Structure';
     import attribute from '../../components/Attribute';
     import articleList from '../../components/Article';
+    import preview from '../../components/Preview'
 
     export default {
         data() {
             return {
                 mid: this.$route.query.mid,
 
-                dialogVisible: false,
+                previewDialogVisible: false,
+
+                form: {
+                    name: '',
+                },
+
+                previewUrl: '',
             }
         },
 
         created() {
-            console.log("当前会议id", this.mid)
+            const entryArray = [];
+            for(let i = 0 ; i < 9 ; i++){
+                entryArray.push({
+                    icon: "",
+                    label: i + 1,
+                    type: 'article',
+                    articleId: '',
+                    href: '',
+                    location: '',
+                    city: '',
+                    date: '',
+                    fileList: [],
+                    scheduleFile: [],
+                });
+            }
+
+            this.$store.commit('initEntry', {
+                entryArray
+            });
+
+            this.$get(`HandBookbyId?id=${this.mid}`).then(({Code, Msg, Data})=>{
+                let {
+                    Fpjson,
+                    Hbname
+                } = Data;
+
+                this.form.name = Hbname;
+
+                if(Fpjson){
+                    let {entryArray, carouselArray} = JSON.parse(Fpjson);
+                    this.$store.commit('initCarouselArray', {
+                        carouselArray,
+                    });
+                    this.$store.commit('initEntry', {
+                        entryArray
+                    });
+                }
+            })
         },
 
         mounted() {
@@ -70,14 +122,27 @@
 
         methods: {
             submit(){
-                console.log("保存的数据", this.mid, this.$store.state.attribute);
+                let {entryArray, carouselArray} = this.$store.state.attribute;
+
+                this.$post(`SaveHandBook`, {
+                    Id: ~~this.mid,
+                    Hbname: this.form.name,
+                    Fpjson: JSON.stringify({carouselArray, entryArray})
+                }).then(({Code, Msg}) => {
+                    if(Code === 200){
+                        this.$showMsgTip(`保存成功`);
+                    }else{
+                        this.$showErrorTip(`保存失败`)
+                    }
+                })
             }
         },
 
         components: {
             structure,
             attribute,
-            articleList
+            articleList,
+            preview
         }
     }
 </script>

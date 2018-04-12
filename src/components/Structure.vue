@@ -96,7 +96,7 @@
         },
 
         created() {
-            this.initData();
+
         },
 
         mounted() {
@@ -104,33 +104,6 @@
         },
 
         methods: {
-            initData() {
-                const entryArray = [];
-                for(let i = 0 ; i < 9 ; i++){
-                    entryArray.push({
-                        icon: "",
-                        label: i + 1,
-                        type: 'article',
-                        articleId: '',
-                        href: '',
-                        location: '',
-                        city: '',
-                        date: '',
-                        fileList: [],
-                        scheduleFile: [],
-                    });
-                }
-
-                this.$store.commit('initEntry', {
-                    entryArray
-                });
-
-                const carouselArray = [];
-                this.$store.commit('initCarouselArray', {
-                    carouselArray,
-                })
-            },
-
             chooseEntry(index) {
                 this.$store.commit('chooseEntry', {
                     entryIndex: index - 1,
