@@ -44,7 +44,7 @@
 
         <footer class="footer">
             <el-button type="success" @click="previewDialogVisible = true">预览</el-button>
-            <el-button type="primary" @click="submit">保存</el-button>
+            <el-button type="primary" @click="submit" :disabled="!form.name">保存</el-button>
             <el-button type="info" @click="()=>{this.$router.back()}">返回</el-button>
         </footer>
 
