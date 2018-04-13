@@ -24,8 +24,16 @@
     }
 
     .link-btn {
-        color: #409EFF;
+        color: #333;
         cursor: pointer;
+    }
+
+    .link-btn:hover{
+        color: #409EFF;
+    }
+
+    .link-btn.active{
+        color: #409EFF;
     }
 
     .insert-btn, .copy-btn {
@@ -55,7 +63,7 @@
         text-align: center;
     }
 
-    .el-button {
+    .footer .el-button {
         width: 200px;
     }
 
@@ -64,6 +72,11 @@
         margin: 30px auto;
         border: 1px solid #ccc;
         padding: 20px;
+    }
+
+    .btn-add{
+        display: block;
+        margin: 10px auto;
     }
 </style>
 
@@ -78,16 +91,18 @@
         <div class="container">
             <div class="tab-aside">
                 <el-tabs v-model="activeName" class="tab-aside">
-                    <el-tab-pane label="特殊样式" name="style">
+                    <el-tab-pane label="样式" name="style">
                         <styleTemplate @insertStyle="insertStyle"/>
                     </el-tab-pane>
-                    <el-tab-pane label="插入文章" name="article">
+                    <el-tab-pane label="文章" name="article">
                         <div v-for="item in articleList" :key="item.id" class="article-item">
-                            <span class="link-btn" @click="link(item.id)">{{item.title}}</span>
+                            <span class="link-btn" :class="{active: item.id === aid}" @click="link(item.id)">{{item.title}}</span>
 
                             <span class="copy-btn btn" :data-clipboard-text="`#/article?id=${item.id}`">复制</span>
                             <span class="insert-btn" @click="insertArticle(item.id, item.title)">插入</span>
                         </div>
+
+                        <el-button class="btn-add" type="primary" size="mini" icon="el-icon-plus" circle @click="addNew"></el-button>
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -168,7 +183,8 @@
         },
 
         created() {
-            this.init();
+            this.initDetail();
+            this.initArticleList();
         },
 
         mounted() {
@@ -179,27 +195,7 @@
         },
 
         methods: {
-            init() {
-                this.$get(`HandBookDetailList?pid=${this.mid}`).then(res=>{
-                    const {Data} = res;
-                    if(Data){
-                        const articleList = Data.map(item => {
-                            return {
-                                title: item.Pagename,
-                                id: item.Id,
-                            }
-                        });
-
-                        this.$store.commit("initArticleList", {
-                            articleList,
-                        });
-                    }else{
-                        this.$store.commit("initArticleList", {
-                            articleList: []
-                        });
-                    }
-                });
-
+            initDetail() {
                 if (this.aid) {
                     this.$get(`HandBookDetailbyId?id=${this.aid}`).then(res => {
                         if (res.Code === 200) {
@@ -208,10 +204,34 @@
                             this.model = Pagedetail;
                         }
                     })
+                }else{
+                    this.form.name = "";
+                    this.model = "";
                 }
             },
 
+            initArticleList(){
+                return this.$get(`HandBookDetailList?pid=${this.mid}`).then(res=>{
+                    const {Data} = res;
+                    const articleList = Data.map(item => {
+                        return {
+                            title: item.Pagename,
+                            id: item.Id,
+                        }
+                    });
+
+                    this.$store.commit("initArticleList", {
+                        articleList,
+                    });
+                });
+            },
+
             submit() {
+                if(!this.form.name){
+                    this.$showErrorTip("请输入文章标题");
+                    return;
+                }
+
                 this.$post(`SaveHandBookDetail`, {
                     Id: this.aid ? ~~this.aid : 0,
                     Pid: ~~this.mid,
@@ -220,7 +240,7 @@
                 }).then(res => {
                     if (res.Code === 200) {
                         this.$showMsgTip(`保存成功`);
-                        this.$router.go(-1);
+                        this.link(res.Data);
                     } else {
                         this.$showErrorTip(`保存失败`);
                     }
@@ -231,25 +251,13 @@
                 this.$deleteConfirm(() => {
                     this.$get(`HandBookDetailDel?id=${this.aid}`).then(res => {
                         if (res.Code === 200) {
-                            let id = 0;
-                            for(let i =0 ; i < this.$store.state.attribute.articleList.length; i++){
-                                let item = this.$store.state.attribute.articleList[i];
-                                if(item.id === this.aid){
-                                    break;
-                                }
-                                id = item.id;
-                            }
-
-                            if(id === 0){
-                                if(this.$store.state.attribute.articleList.length === 1){
+                            this.initArticleList().then(() => {
+                                if(this.articleList.length === 0){
                                     this.$router.go(-1);
                                 }else{
-                                    id = this.$store.state.attribute.articleList[0];
+                                    this.link(this.articleList[0].id);
                                 }
-                            }
-
-                            this.link(id)
-
+                            });
                         } else {
                             this.$showErrorTip(`删除失败`);
                         }
@@ -257,10 +265,21 @@
                 });
             },
 
-            link(aid) {
+           async link(aid) {
+                if(aid === this.aid){
+                    return
+                }
+
                 this.aid = aid;
+                this.initDetail();
+                await this.initArticleList();
                 this.$router.replace(`/main/article/edit?mid=${this.mid}&aid=${aid}`);
-                this.init();
+            },
+
+            async addNew(){
+                this.aid = "";
+                this.initDetail();
+                this.$router.replace(`/main/article/edit?mid=${this.mid}`);
             },
 
             insertArticle(id, title) {

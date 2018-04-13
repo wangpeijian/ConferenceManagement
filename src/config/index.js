@@ -12,7 +12,7 @@ const isTest = () => {
 let def = {};
 
 let dev = {
-    INTERFACE: "http://172.16.40.206:9091/",
+    INTERFACE: "http://localhost:9091/",
     UPLOAD_IMAGE: `http://172.16.40.206:9091/imgupload`,
     UPLOAD_EDITOR_IMAGE: `http://172.16.40.206:9091/detailimgupload`,
     UPLOAD_FILE: `http://172.16.40.206:9091/HbfileSave`,

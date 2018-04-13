@@ -18,6 +18,8 @@
 
     .item-body {
         font-size: 14px;
+        flex-grow: 1;
+        padding-right: 10px;
     }
 
     .insert-btn {
@@ -25,6 +27,9 @@
         cursor: pointer;
         text-decoration: underline;
         font-size: 14px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 </style>
 
@@ -32,6 +37,7 @@
     <div class="page">
 
         <!--特殊样式组件-->
+        <!--组件 1-->
         <div class="template-item">
             <div class="item-body">
                 <span style="display: inline-block;background: #eee; line-height: 100%;">
@@ -42,6 +48,19 @@
 
             <div class="insert-btn" @click="add">添加</div>
         </div>
+        <!--组件 1 结束-->
+
+        <!--组件 2-->
+        <div class="template-item">
+            <div class="item-body">
+                <div style="background: rgb(255, 179, 192);padding: 5px 10px;margin: 5px 0;">
+                    <span style="">标题</span>
+                </div>
+            </div>
+
+            <div class="insert-btn" @click="add">添加</div>
+        </div>
+        <!--组件 2 结束-->
 
     </div>
 </template>

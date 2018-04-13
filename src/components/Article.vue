@@ -1,5 +1,5 @@
 <style scoped>
-    .page{
+    .page {
         display: flex;
         flex-direction: column;
         flex-grow: 1;
@@ -9,17 +9,17 @@
         text-align: center;
     }
 
-    .article-item{
+    .article-item {
         font-size: 14px;
         padding: 10px 0;
         color: #333;
     }
 
-    .article-item:hover{
+    .article-item:hover {
         color: #409EFF;
     }
 
-    .btn-add{
+    .btn-add {
         margin-top: 10px;
     }
 </style>
@@ -30,16 +30,16 @@
 
         <!--基本属性-->
         <el-card class="box-card">
-            <!--<div  v-for="item in articleList" :key="item.id">
+            <div  v-for="item in articleList" :key="item.id">
                 <router-link :to="`/main/article/edit?mid=${mid}&aid=${item.id}`">
                     <div class="article-item">
                         {{item.title}}
                     </div>
                 </router-link>
-            </div>-->
+            </div>
 
             <router-link :to="`/main/article/edit?mid=${mid}`">
-                <el-button class="btn-add" type="primary"  size="mini" icon="el-icon-plus" circle></el-button>
+                <el-button class="btn-add" type="primary" size="mini" icon="el-icon-plus" circle></el-button>
             </router-link>
         </el-card>
     </div>
@@ -54,24 +54,18 @@
         },
 
         created() {
-            this.$get(`HandBookDetailList?pid=${this.mid}`).then(res=>{
+            this.$get(`HandBookDetailList?pid=${this.mid}`).then(res => {
                 const {Data} = res;
-                if(Data){
-                    const articleList = Data.map(item => {
-                        return {
-                            title: item.Pagename,
-                            id: item.Id,
-                        }
-                    });
+                const articleList = Data.map(item => {
+                    return {
+                        title: item.Pagename,
+                        id: item.Id,
+                    }
+                });
 
-                    this.$store.commit("initArticleList", {
-                        articleList,
-                    });
-                }else {
-                    this.$store.commit("initArticleList", {
-                        articleList: []
-                    });
-                }
+                this.$store.commit("initArticleList", {
+                    articleList,
+                });
             })
         },
 
@@ -79,9 +73,7 @@
 
         },
 
-        methods: {
-
-        },
+        methods: {},
 
         components: {},
 

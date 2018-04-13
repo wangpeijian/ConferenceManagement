@@ -122,6 +122,11 @@
 
         methods: {
             submit(){
+                if(!this.form.name){
+                    this.$showErrorTip("请输入会议名称");
+                    return;
+                }
+
                 let {entryArray, carouselArray} = this.$store.state.attribute;
 
                 this.$post(`SaveHandBook`, {

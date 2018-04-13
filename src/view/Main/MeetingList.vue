@@ -279,12 +279,12 @@
             doAdd(){
                 this.$post(`SaveHandBook`, {
                     Hbname: this.meetingName
-                }).then(({Code, Msg, data}) => {
+                }).then(({Code, Msg, Data}) => {
                     if(Code === 200){
                         this.addDialogVisible = false;
                         this.$showMsgTip(`创建成功`);
-                        this.doSearch();
-                        // this.$router.push(`/main/meeting/edit?mid=${data.id}`);
+                        // this.doSearch();
+                        this.$router.push(`/main/meeting/edit?mid=${Data}`);
                     }else{
                         this.$showErrorTip(Msg);
                     }
