@@ -99,11 +99,15 @@
         text-align: center;
     }
 
-    .footer .el-button{
+    .footer .el-button {
         width: 200px;
     }
 
-    .add-input{
+    .add-input {
+        width: 100%;
+    }
+
+    .el-select {
         width: 100%;
     }
 </style>
@@ -183,7 +187,7 @@
             title="发布"
             :visible.sync="releaseDialogVisible"
             width="30%"
-            >
+        >
             <span>访问地址:{{releaseId}}</span>
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="releaseDialogVisible = false">确 定</el-button>
@@ -196,12 +200,28 @@
             :visible.sync="addDialogVisible"
             width="30%"
         >
-            <el-input
-                class="add-input"
-                placeholder="请输入会议名称"
-                v-model="meetingName"
-                >
-            </el-input>
+
+            <el-form label-width="80px">
+                <el-form-item label="会议名称">
+                    <el-input
+                        class="add-input"
+                        placeholder="请输入会议名称"
+                        v-model="meetingName"
+                    >
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item label="复制首页">
+                    <el-select v-model="copyId" clearable placeholder="请选择要复制的会议">
+                        <el-option
+                            v-for="item in meetingData"
+                            :key="item.Id"
+                            :label="item.Hbname"
+                            :value="item.Id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
 
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="doAdd" :disabled="!meetingName">确 定</el-button>
@@ -209,7 +229,7 @@
         </el-dialog>
 
         <!--预览提示框-->
-        <preview :previewDialogVisible="previewDialogVisible" :url="previewUrl" @close="previewDialogVisible = false" />
+        <preview :previewDialogVisible="previewDialogVisible" :url="previewUrl" @close="previewDialogVisible = false"/>
     </div>
 </template>
 
@@ -228,6 +248,7 @@
 
                 addDialogVisible: false,
                 meetingName: '',
+                copyId: '',
 
                 previewDialogVisible: false,
                 previewUrl: '',
@@ -265,32 +286,73 @@
 
             doDelete(id) {
                 this.$deleteConfirm(() => {
-                    this.$get(`HandBookDel?id=${id}`).then(({Code, Data, Msg}) =>{
-                        if(Code === 200){
+                    this.$get(`HandBookDel?id=${id}`).then(({Code, Data, Msg}) => {
+                        if (Code === 200) {
                             this.$showMsgTip(`删除成功`);
                             this.doSearch();
-                        }else {
+                        } else {
                             this.$showErrorTip(`删除失败`)
                         }
                     })
                 })
             },
 
-            doAdd(){
+            async doAdd() {
+                let Fpjson = await this.getCopyJson();
+
                 this.$post(`SaveHandBook`, {
-                    Hbname: this.meetingName
+                    Hbname: this.meetingName,
+                    Fpjson: Fpjson,
                 }).then(({Code, Msg, Data}) => {
-                    if(Code === 200){
+                    if (Code === 200) {
                         this.addDialogVisible = false;
                         this.$showMsgTip(`创建成功`);
-                        // this.doSearch();
                         this.$router.push(`/main/meeting/edit?mid=${Data}`);
-                    }else{
+                    } else {
                         this.$showErrorTip(Msg);
                     }
                 })
             },
+
+            getCopyJson() {
+                const copyId = this.copyId;
+                if (copyId) {
+                   return this.$get(`HandBookbyId?id=${copyId}`).then(({Code, Msg, Data})=>{
+                        let {
+                            Fpjson,
+                        } = Data;
+
+                        if(Fpjson){
+                            let {entryArray, carouselArray} = JSON.parse(Fpjson);
+
+                            entryArray = entryArray.map(item => {
+                                return Object.assign(item, {
+                                    articleId: '',
+                                    href: '',
+                                    location: '',
+                                    city: '',
+                                    date: '',
+                                    fileList: [],
+                                    scheduleFile: [],
+                                });
+                            });
+
+                            Fpjson = JSON.stringify({
+                                entryArray,
+                                carouselArray
+                            });
+                        }
+
+                        return Fpjson;
+                    })
+
+                } else {
+                    return ''
+                }
+            }
         },
+
+        computed: {},
 
         components: {
             preview

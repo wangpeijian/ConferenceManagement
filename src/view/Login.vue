@@ -172,7 +172,7 @@
 
         created() {
             //初始化时，若本地记录了登录信息，则默认填充登录信息
-            let account = this.getStorage(this.KEYS.USER_ACCOUNT);
+            let account = this.$getStorage(this.KEYS.USER_ACCOUNT);
             if (account) {
                 let {username, password, remember} = account;
                 this.remember = remember;
@@ -213,45 +213,28 @@
         methods: {
             submit() {
                 this.loading = true;
-                this.$router.replace("/main/");
-               /* this.$refs.form.validate((valid) => {
-                    if (valid) {
-                        this.post("SystemManagerController/userLogin", {
-                            username: this.form.username,
-                            password: this.form.password,
-                        }).then(res => {
-                            if (res.code === 0) {
-                                //保存登录用户信息
-                                clearInterval(this.scanQRCodeTimer);
-                                this.loginCode = false;
-                                let user = res.data;
-                                this.setSession(this.KEYS.USER_INFO, user);
+                this.$refs.form.validate((valid) => {
+                    if (valid && this.form.username === 'admin' && this.form.password === 'admin') {
 
-                                //判断是否勾选了记住账号，勾选中则将账号信息存到本地
-                                if (this.remember) {
-                                    this.setStorage(this.KEYS.USER_ACCOUNT, {
-                                        remember: this.remember,
-                                        username: this.form.username,
-                                        password: this.form.password,
-                                    });
-                                } else {
-                                    this.setStorage(this.KEYS.USER_ACCOUNT, {
-                                        remember: this.remember,
-                                    });
-                                }
-                                this.$router.push('/Main');
-                            } else {
-                                this.$message.error(res.msg);
-                            }
-
-                            this.loading = false;
-                        });
+                        if (this.remember) {
+                            this.$setStorage(this.KEYS.USER_ACCOUNT, {
+                                remember: this.remember,
+                                username: this.form.username,
+                                password: this.form.password,
+                            });
+                        } else {
+                            this.$setStorage(this.KEYS.USER_ACCOUNT, {
+                                remember: this.remember,
+                            });
+                        }
+                        this.$router.replace("/main/");
 
                     } else {
+                        this.$showErrorTip("账号密码错误");
                         this.loading = false;
                         return false;
                     }
-                })*/
+                })
             },
         },
 

@@ -12,15 +12,20 @@ const isTest = () => {
 let def = {};
 
 let dev = {
-    INTERFACE: "http://localhost:9091/",
-    UPLOAD_IMAGE: `http://172.16.40.206:9091/imgupload`,
-    UPLOAD_EDITOR_IMAGE: `http://172.16.40.206:9091/detailimgupload`,
-    UPLOAD_FILE: `http://172.16.40.206:9091/HbfileSave`,
+    INTERFACE: "http://mt.guoanfamily.com/handbook/",
+    UPLOAD_IMAGE: `http://mt.guoanfamily.com/handbook/imgupload`,
+    UPLOAD_EDITOR_IMAGE: `http://mt.guoanfamily.com/handbook/detailimgupload`,
+    UPLOAD_FILE: `http://mt.guoanfamily.com/handbook/HbfileSave`,
 };
 
 let test = {};
 
-let prod = {};
+let prod = {
+    INTERFACE: "http://mt.guoanfamily.com/handbook/",
+    UPLOAD_IMAGE: `http://mt.guoanfamily.com/handbook/imgupload`,
+    UPLOAD_EDITOR_IMAGE: `http://mt.guoanfamily.com/handbook/detailimgupload`,
+    UPLOAD_FILE: `http://mt.guoanfamily.com/handbook/HbfileSave`,
+};
 
 let config = dev;
 

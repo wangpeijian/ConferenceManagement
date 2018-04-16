@@ -9,7 +9,7 @@
     }
 
     .footer{
-        padding: 80px 0;
+        padding: 10px 0;
         width: 100%;
         text-align: center;
     }
@@ -28,6 +28,10 @@
 
 <template>
     <div>
+        <div style="margin: 20px;">
+            <el-input v-model="form.name" placeholder="请输入会议标题"></el-input>
+        </div>
+
         <div class="container">
             <articleList/>
 
@@ -36,11 +40,11 @@
             <attribute />
         </div>
 
-        <el-form class="form-box" ref="form" :model="form" label-width="80px">
+        <!--<el-form class="form-box" ref="form" :model="form" label-width="80px">
             <el-form-item label="会议名称">
-                <el-input v-model="form.name"></el-input>
+
             </el-form-item>
-        </el-form>
+        </el-form>-->
 
         <footer class="footer">
             <el-button type="success" @click="previewDialogVisible = true">预览</el-button>

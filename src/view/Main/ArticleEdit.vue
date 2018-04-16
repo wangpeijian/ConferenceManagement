@@ -58,13 +58,13 @@
     }
 
     .footer {
-        padding: 30px 0;
+        padding: 10px 0;
         width: 100%;
         text-align: center;
     }
 
     .footer .el-button {
-        width: 200px;
+        width: 150px;
     }
 
     .form-box {
@@ -107,21 +107,30 @@
                 </el-tabs>
             </div>
 
-            <froala class="editor-box" v-if="config" :tag="'textarea'" :config="config" v-model="model"></froala>
+            <div>
+                <div style="margin-bottom: 10px;">
+                    <el-input v-model="form.name" placeholder="请输入标题"></el-input>
+                </div>
+
+                <froala class="editor-box" v-if="config" :tag="'textarea'" :config="config" v-model="model"></froala>
+
+                <footer class="footer">
+                    <el-button type="success" @click="previewDialogVisible = true">预览</el-button>
+                    <el-button type="primary" @click="submit" :disabled="!form.name">保存</el-button>
+                    <el-button type="danger" @click="remove" v-show="aid">删除</el-button>
+                    <el-button type="info" @click="()=>{this.$router.back()}">返回</el-button>
+                </footer>
+            </div>
+
         </div>
 
-        <el-form class="form-box" ref="form" :model="form" label-width="80px">
+        <!--<el-form class="form-box" ref="form" :model="form" label-width="80px">
             <el-form-item label="文章标题">
-                <el-input v-model="form.name"></el-input>
-            </el-form-item>
-        </el-form>
 
-        <footer class="footer">
-            <el-button type="success" @click="previewDialogVisible = true">预览</el-button>
-            <el-button type="primary" @click="submit" :disabled="!form.name">保存</el-button>
-            <el-button type="danger" @click="remove" v-show="aid">删除</el-button>
-            <el-button type="info" @click="()=>{this.$router.back()}">返回</el-button>
-        </footer>
+            </el-form-item>
+        </el-form>-->
+
+
 
         <!--预览提示框-->
         <preview :previewDialogVisible="previewDialogVisible" :url="previewUrl" @close="previewDialogVisible = false"/>

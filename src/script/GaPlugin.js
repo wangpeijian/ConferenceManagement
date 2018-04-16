@@ -71,6 +71,7 @@ export default class {
         Vue.prototype.KEYS = {
             //记录当前登录的用户信息
             USER_INFO: 'USER_INFO',
+            USER_ACCOUNT: 'USER_ACCOUNT',
         };
 
         //定义全局事件
