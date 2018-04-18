@@ -212,28 +212,33 @@
 
         methods: {
             submit() {
-                this.loading = true;
                 this.$refs.form.validate((valid) => {
-                    if (valid && this.form.username === 'admin' && this.form.password === 'admin') {
 
-                        if (this.remember) {
-                            this.$setStorage(this.KEYS.USER_ACCOUNT, {
-                                remember: this.remember,
-                                username: this.form.username,
-                                password: this.form.password,
-                            });
-                        } else {
-                            this.$setStorage(this.KEYS.USER_ACCOUNT, {
-                                remember: this.remember,
-                            });
-                        }
-                        this.$router.replace("/main/");
+                        this.$post(`login`, {
+                            name: this.form.username,
+                            password: this.form.password
+                        }).then(res => {
 
-                    } else {
-                        this.$showErrorTip("账号密码错误");
-                        this.loading = false;
-                        return false;
-                    }
+                            if(res.Code === 200 && res.Data){
+
+                                this.$setSession(this.KEYS.USER_ID, res.Data);
+
+                                if (this.remember) {
+                                    this.$setStorage(this.KEYS.USER_ACCOUNT, {
+                                        remember: this.remember,
+                                        username: this.form.username,
+                                        password: this.form.password,
+                                    });
+                                } else {
+                                    this.$setStorage(this.KEYS.USER_ACCOUNT, {
+                                        remember: this.remember,
+                                    });
+                                }
+                                this.$router.replace("/main/");
+                            }else{
+                                this.$showErrorTip("账号密码错误!");
+                            }
+                        });
                 })
             },
         },

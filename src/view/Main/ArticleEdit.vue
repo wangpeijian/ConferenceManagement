@@ -187,7 +187,7 @@
                     name: '',
                 },
 
-                previewUrl: '',
+                previewUrl: `#/article?id=${this.$route.query.aid}&uid=${this.$getSession(this.KEYS.USER_ID)}`,
             }
         },
 

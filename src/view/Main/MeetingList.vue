@@ -110,6 +110,10 @@
     .el-select {
         width: 100%;
     }
+
+    .clip-btn{
+        cursor: pointer;
+    }
 </style>
 
 <template>
@@ -145,32 +149,32 @@
                 <div class="meeting-item" v-for="item in meetingData" :key="item.Id">
                     {{item.Hbname}}
 
-                    <div class="hover-content">
+                    <div class="hover-content" @click="doEdit(item.Id)">
                         <div class="btn-box">
                             <el-tooltip class="item" effect="dark" content="发布" :enterable="false" placement="top">
                                 <el-button icon="el-icon-upload" type="primary" circle
-                                           @click="doRelease(item.Id)"></el-button>
+                                           @click.stop.prevent="doRelease(item.Id)"></el-button>
                             </el-tooltip>
                         </div>
 
                         <div class="btn-box">
                             <el-tooltip class="item" effect="dark" content="预览" :enterable="false" placement="top">
                                 <el-button icon="el-icon-view" type="success" circle
-                                           @click="doPreview(item.Id)"></el-button>
+                                           @click.stop.prevent="doPreview(item.Id)"></el-button>
                             </el-tooltip>
                         </div>
 
                         <div class="btn-box">
-                            <el-tooltip class="item" effect="dark" content="编辑" :enterable="false" placement="top">
-                                <el-button icon="el-icon-edit-outline" type="warning" circle
-                                           @click="doEdit(item.Id)"></el-button>
+                            <el-tooltip class="item" effect="dark" content="复制" :enterable="false" placement="top">
+                                <el-button icon="el-icon-document" type="warning" circle
+                                           @click.stop.prevent="doCopy(item.Id)"></el-button>
                             </el-tooltip>
                         </div>
 
                         <div class="btn-box">
                             <el-tooltip class="item" effect="dark" content="删除" :enterable="false" placement="top">
                                 <el-button icon="el-icon-delete" type="danger" circle
-                                           @click="doDelete(item.Id)"></el-button>
+                                           @click.stop.prevent="doDelete(item.Id)"></el-button>
                             </el-tooltip>
                         </div>
                     </div>
@@ -188,7 +192,14 @@
             :visible.sync="releaseDialogVisible"
             width="30%"
         >
-            <span>访问地址:{{releaseId}}</span>
+            <label>访问地址: </label>
+            <el-input readonly :value="`http://mt.guoanfamily.com/meetWap/#/?id=${releaseId}`">
+                <template slot="append">
+                    <i class="el-icon-document clip-btn"
+                       :data-clipboard-text="`http://mt.guoanfamily.com/meetWap/#/?id=${releaseId}`"></i>
+                </template>
+            </el-input>
+
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="releaseDialogVisible = false">确 定</el-button>
             </span>
@@ -211,7 +222,7 @@
                     </el-input>
                 </el-form-item>
 
-                <el-form-item label="复制首页">
+                <!--<el-form-item label="复制首页">
                     <el-select v-model="copyId" clearable placeholder="请选择要复制的会议">
                         <el-option
                             v-for="item in meetingData"
@@ -220,7 +231,7 @@
                             :value="item.Id">
                         </el-option>
                     </el-select>
-                </el-form-item>
+                </el-form-item>-->
             </el-form>
 
             <span slot="footer" class="dialog-footer">
@@ -235,6 +246,7 @@
 
 <script>
     import preview from '../../components/Preview'
+    import Clipboard from 'clipboard';
 
     export default {
         data() {
@@ -251,7 +263,7 @@
                 copyId: '',
 
                 previewDialogVisible: false,
-                previewUrl: '',
+                previewUrl: ``,
             }
         },
 
@@ -260,7 +272,10 @@
         },
 
         mounted() {
-
+            const clipboard = new Clipboard('.clip-btn');
+            clipboard.on('success', (e) => {
+                this.$showMsgTip("复制成功")
+            });
         },
 
         methods: {
@@ -277,7 +292,7 @@
 
             doPreview(id) {
                 this.previewDialogVisible = true;
-                this.previewUrl = id;
+                this.previewUrl = `?id=${id}&uid=${this.$getSession(this.KEYS.USER_ID)}`;
             },
 
             doEdit(id) {
@@ -297,12 +312,15 @@
                 })
             },
 
-            async doAdd() {
-                let Fpjson = await this.getCopyJson();
+            doCopy(id) {
+                this.$get(`CopyHandBook?id=${id}`).then(res => {
+                    this.doSearch();
+                })
+            },
 
+            async doAdd() {
                 this.$post(`SaveHandBook`, {
                     Hbname: this.meetingName,
-                    Fpjson: Fpjson,
                 }).then(({Code, Msg, Data}) => {
                     if (Code === 200) {
                         this.addDialogVisible = false;
@@ -313,43 +331,6 @@
                     }
                 })
             },
-
-            getCopyJson() {
-                const copyId = this.copyId;
-                if (copyId) {
-                   return this.$get(`HandBookbyId?id=${copyId}`).then(({Code, Msg, Data})=>{
-                        let {
-                            Fpjson,
-                        } = Data;
-
-                        if(Fpjson){
-                            let {entryArray, carouselArray} = JSON.parse(Fpjson);
-
-                            entryArray = entryArray.map(item => {
-                                return Object.assign(item, {
-                                    articleId: '',
-                                    href: '',
-                                    location: '',
-                                    city: '',
-                                    date: '',
-                                    fileList: [],
-                                    scheduleFile: [],
-                                });
-                            });
-
-                            Fpjson = JSON.stringify({
-                                entryArray,
-                                carouselArray
-                            });
-                        }
-
-                        return Fpjson;
-                    })
-
-                } else {
-                    return ''
-                }
-            }
         },
 
         computed: {},

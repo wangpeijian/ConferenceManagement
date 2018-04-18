@@ -12,8 +12,8 @@
 
 <style scoped>
     .iphone-box {
-        height: 667px;
-        width: 375px;
+        height: 805px;
+        width: 410px;
         margin: 0 auto;
         background-size: contain;
         background-repeat: no-repeat;
@@ -22,10 +22,10 @@
 
     .webview {
         position: absolute;
-        top: 145px;
-        left: 38px;
-        width: 262px;
-        height: 424px;
+        top: 141px;
+        left: 45px;
+        width: 318px;
+        height: 546px;
     }
 </style>
 
@@ -37,7 +37,7 @@
             :before-close="close"
         >
             <div class="iphone-box" :style="{backgroundImage: `url(${iphoneImage})`}">
-                <iframe class="webview" :src="url" frameborder="0"></iframe>
+                <iframe v-if="preview" class="webview" :src="`http://mt.guoanfamily.com/meetWap/${url}`" scrolling="no"  frameborder="0" width="262px" height="424px"></iframe>
             </div>
 
         </el-dialog>

@@ -202,7 +202,7 @@
                             <el-form-item label="文件列表" key="trip">
                                 <el-upload
                                     class="upload-demo"
-                                    :action="UPLOAD_FILE"
+                                    :action="UPLOAD_TRIP"
                                     :data="{pid: mid}"
                                     :on-success="scheduleUploadSuccess"
                                     :on-remove="removeSchedule"
@@ -211,6 +211,15 @@
                                     <el-button size="small" type="primary" v-if="entryItem.scheduleFile.length === 0">点击上传</el-button>
                                 </el-upload>
                             </el-form-item>
+
+                            <el-form-item label="">
+                                <el-button type="primary" size="small" round :disabled="entryItem.scheduleFile.length === 0" @click="checkDetail">查看列表</el-button>
+                            </el-form-item>
+                        </template>
+
+                        <!--会议签到-->
+                        <template v-if="entryItem.type === 'sign'">
+
                         </template>
 
                     </el-form>
@@ -250,6 +259,9 @@
                     }, {
                         value: 'trip',
                         label: '行程'
+                    }, {
+                        value: 'sign',
+                        label: '签到'
                     }]
                 }],
 
@@ -284,20 +296,7 @@
 
             /*选择入口链接类型*/
             changEntryType(value){
-                switch (value){
-                    case "article":
-                        break;
-                    case "link":
-                        break;
-                    case "map":
-                        break;
-                    case "weather":
-                        break;
-                    case "file":
-                        break;
-                    case "trip":
-                        break;
-                }
+
             },
 
             /*九宫格控制*/
@@ -329,16 +328,16 @@
 
             /*日程文件控制*/
             scheduleUploadSuccess(res, file, fileList){
-                const {Data: {Filename, Filepath, Id}} = res;
+                // const {Data: {Filename, Filepath, Id}} = res;
 
                 if(!this.entryItem.scheduleFile){
                     this.entryItem.scheduleFile = [];
                 }
 
                 this.entryItem.scheduleFile = [{
-                    name: Filename,
-                    url: Filepath,
-                    id: Id,
+                    name: file.name,
+                  /*  url: Filepath,
+                    id: Id,*/
                 }];
             },
 
@@ -353,6 +352,10 @@
                 });
             },
             /*日程文件控制结束*/
+
+            checkDetail(){
+                this.$router.push(`/main/trip/edit?mid=${this.mid}`);
+            }
         },
 
         components: {},

@@ -11,7 +11,7 @@
         justify-content: start;
         border: 1px solid #333;
         width: 375px;
-        height: 667px;
+        height: 820px;
         margin: 0 auto;
     }
 
@@ -78,11 +78,11 @@
             </div>
 
             <div class="entrance-list">
-                <div class="entrance-item" :class="{'active': index - 1 ===  entryIndex && objectType === 'entry'}" v-for="index in 9" :key="index" @click="chooseEntry(index)">
+                <div class="entrance-item" :class="{'active': index ===  entryIndex && objectType === 'entry'}" v-for="(item, index) in entryArray" :key="index" @click="chooseEntry(index)">
                     <div class="cover-image">
-                        <img class="entry-icon" v-if="entryArray[index - 1].icon" :src="entryArray[index - 1].icon">
+                        <img class="entry-icon" v-if="item && item.icon" :src="item.icon">
                     </div>
-                    <p class="entry-label">{{entryArray[index - 1].label || index}}</p>
+                    <p class="entry-label"  v-if="item">{{item.label || index}}</p>
                 </div>
             </div>
         </div>
@@ -106,7 +106,7 @@
         methods: {
             chooseEntry(index) {
                 this.$store.commit('chooseEntry', {
-                    entryIndex: index - 1,
+                    entryIndex: index,
                 });
             },
 

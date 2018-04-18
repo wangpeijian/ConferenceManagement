@@ -52,7 +52,10 @@
 <template>
     <div class="site-body">
         <header class="site-header">
-            <img class="logo" src="../../static/Main/logo.png" alt="">
+            <router-link to="/main">
+                <img class="logo" src="../../static/Main/logo.png">
+            </router-link>
+
 
             <span class="logout" @click="logout">退出</span>
             <span class="timer">{{sysDate}}</span>

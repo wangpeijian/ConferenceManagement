@@ -72,6 +72,7 @@ export default class {
             //记录当前登录的用户信息
             USER_INFO: 'USER_INFO',
             USER_ACCOUNT: 'USER_ACCOUNT',
+            USER_ID: 'USER_ID',
         };
 
         //定义全局事件
@@ -86,6 +87,7 @@ export default class {
         Vue.prototype.UPLOAD_IMAGE = config.UPLOAD_IMAGE;
         Vue.prototype.UPLOAD_EDITOR_IMAGE = config.UPLOAD_EDITOR_IMAGE;
         Vue.prototype.UPLOAD_FILE = config.UPLOAD_FILE;
+        Vue.prototype.UPLOAD_TRIP = config.UPLOAD_TRIP;
 
         /**
          * 获取session中的对象
@@ -162,10 +164,13 @@ export default class {
          * @param url
          * @returns {Promise.<TResult>}
          */
-        Vue.prototype.$get = url => {
+        Vue.prototype.$get = function(url) {
+
+            const id = this.$getSession(this.KEYS.USER_ID);
+
             return fetch(config.INTERFACE + url, {
                 method: 'get',
-                headers: {"Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json", "Authorization": `Bearer:${id}`},
             }).then(function (response) {
                 return response.json();
             }).then(function (res) {
@@ -184,17 +189,16 @@ export default class {
          * @param data
          * @returns {Promise.<TResult>}
          */
-        Vue.prototype.$post = (url, data = {}) => {
+        Vue.prototype.$post = function(url, data = {}) {
             let requestUrl = config.INTERFACE + url;
 
             let body = JSON.stringify(data);
-            // try {
-            //     body = new Blob([body], {type: 'application/json'})
-            // } catch (e) {}
+
+            const id = this.$getSession(this.KEYS.USER_ID);
 
             return fetch(requestUrl, {
                 method: 'post',
-                headers: {"Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json", "Authorization": `Bearer:${id}`},
                 body: body,
             }).then(function (response) {
                 return response.json();

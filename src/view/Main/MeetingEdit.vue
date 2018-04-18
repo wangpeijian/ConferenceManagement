@@ -75,13 +75,13 @@
                     name: '',
                 },
 
-                previewUrl: '',
+                previewUrl: `?id=${this.$route.query.mid}&uid=${this.$getSession(this.KEYS.USER_ID)}`,
             }
         },
 
         created() {
             const entryArray = [];
-            for(let i = 0 ; i < 9 ; i++){
+            for(let i = 0 ; i < 12 ; i++){
                 entryArray.push({
                     icon: "",
                     label: i + 1,
@@ -100,6 +100,7 @@
                 entryArray
             });
 
+            const defaultEntry = entryArray;
             this.$get(`HandBookbyId?id=${this.mid}`).then(({Code, Msg, Data})=>{
                 let {
                     Fpjson,

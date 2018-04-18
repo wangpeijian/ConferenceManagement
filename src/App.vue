@@ -60,8 +60,8 @@
 
     /*定义滚动条宽高及背景，宽高分别对应横竖滚动条的尺寸*/
     ::-webkit-scrollbar {
-        width: 5px;
-        height: 5px;
+        width: 10px;
+        height: 10px;
         background-color: rgba(245, 245, 245, 0);
         border-radius: 5px;
     }
@@ -75,8 +75,8 @@
 
     /*定义滑块，内阴影及圆角*/
     ::-webkit-scrollbar-thumb {
-        /*width: 10px;*/
-        height: 5px;
+        width: 10px;
+        height: 10px;
         border-radius: 5px;
         /*-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);*/
         background-color: hsla(225, 4%, 58%, 0.33);

@@ -16,6 +16,7 @@ let dev = {
     UPLOAD_IMAGE: `http://mt.guoanfamily.com/handbook/imgupload`,
     UPLOAD_EDITOR_IMAGE: `http://mt.guoanfamily.com/handbook/detailimgupload`,
     UPLOAD_FILE: `http://mt.guoanfamily.com/handbook/HbfileSave`,
+    UPLOAD_TRIP: `http://mt.guoanfamily.com/handbook/ImportTrip`,
 };
 
 let test = {};
@@ -25,6 +26,7 @@ let prod = {
     UPLOAD_IMAGE: `http://mt.guoanfamily.com/handbook/imgupload`,
     UPLOAD_EDITOR_IMAGE: `http://mt.guoanfamily.com/handbook/detailimgupload`,
     UPLOAD_FILE: `http://mt.guoanfamily.com/handbook/HbfileSave`,
+    UPLOAD_TRIP: `http://mt.guoanfamily.com/handbook/ImportTrip`,
 };
 
 let config = dev;
