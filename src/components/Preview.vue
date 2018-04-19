@@ -22,10 +22,30 @@
 
     .webview {
         position: absolute;
-        top: 141px;
+        top: 177px;
         left: 45px;
-        width: 318px;
-        height: 546px;
+        width: 317px;
+        height: 510px;
+    }
+
+    .navigation{
+        position: absolute;
+        top: 141px;
+        width: 317px;
+        left: 45px;
+        height: 35px;
+        background: #ff5073;
+        text-align: center;
+        color: #fff;
+        line-height: 35px;
+    }
+
+    .back-btn{
+        position: absolute;
+        left: 10px;
+        font-size: 24px;
+        top: 5px;
+        cursor: pointer;
     }
 </style>
 
@@ -37,7 +57,15 @@
             :before-close="close"
         >
             <div class="iphone-box" :style="{backgroundImage: `url(${iphoneImage})`}">
-                <iframe v-if="preview" class="webview" :src="`http://mt.guoanfamily.com/meetWap/${url}`" scrolling="no"  frameborder="0" width="262px" height="424px"></iframe>
+
+                <nav class="navigation">
+                    <i class="back-btn el-icon-arrow-left" @click="iframeGoBack"></i>
+
+                    预览
+                </nav>
+
+                <iframe id="preview" v-if="preview" class="webview" :src="`http://mt.guoanfamily.com/meetWap/${url}`" scrolling="no"
+                        frameborder="0" width="262px" height="424px"></iframe>
             </div>
 
         </el-dialog>
@@ -62,7 +90,6 @@
         data() {
             return {
                 iphoneImage: iphoneImage,
-
                 preview: false,
             }
         },
@@ -79,6 +106,12 @@
             close(done) {
                 this.$emit(`close`);
                 done();
+            },
+
+            iframeGoBack(){
+                if(!frames[0].location.hash.includes(this.url)){
+                    history.go(-1);
+                }
             }
         },
 
