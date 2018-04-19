@@ -292,7 +292,7 @@
 
             doPreview(id) {
                 this.previewDialogVisible = true;
-                this.previewUrl = `?id=${id}&uid=${this.$getSession(this.KEYS.USER_ID)}`;
+                this.previewUrl = `#/?id=${id}&uid=${this.$getSession(this.KEYS.USER_ID)}`;
             },
 
             doEdit(id) {

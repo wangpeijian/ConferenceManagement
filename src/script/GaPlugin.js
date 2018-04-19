@@ -173,13 +173,21 @@ export default class {
                 headers: {"Content-Type": "application/json", "Authorization": `Bearer:${id}`},
             }).then(function (response) {
                 return response.json();
-            }).then(function (res) {
+            }).then(res => {
                 console.group(`请求接口：${url}`);
                 console.log("响应结果：", JSON.parse(JSON.stringify(res)));
                 console.groupEnd();
+
+                if(!res.Code){
+                    this.$showErrorTip("登录信息丢失");
+                    this.$router.replace(`/login`);
+                    return;
+                }
+
                 return res;
             }).catch(function (e) {
                 console.error(e);
+                this.$router.replace(`/login`)
             })
         };
 
@@ -202,14 +210,22 @@ export default class {
                 body: body,
             }).then(function (response) {
                 return response.json();
-            }).then(function (res) {
+            }).then(res => {
                 console.group(`请求接口：${url}`);
                 console.log("请求参数：", data);
                 console.log("响应结果：", JSON.parse(JSON.stringify(res)));
                 console.groupEnd();
+
+                if(!res.Code){
+                    this.$showErrorTip("登录信息丢失");
+                    this.$router.replace(`/login`);
+                    return;
+                }
+
                 return res;
             }).catch(function (e) {
                 console.error(e);
+                this.$router.replace(`/login`)
             })
         };
 

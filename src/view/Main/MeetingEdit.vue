@@ -75,7 +75,7 @@
                     name: '',
                 },
 
-                previewUrl: `?id=${this.$route.query.mid}&uid=${this.$getSession(this.KEYS.USER_ID)}`,
+                previewUrl: `#/?id=${this.$route.query.mid}&uid=${this.$getSession(this.KEYS.USER_ID)}`,
             }
         },
 
