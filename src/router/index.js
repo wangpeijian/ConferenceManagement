@@ -7,6 +7,7 @@ const MeetingList = resolve => require(['../view/Main/MeetingList.vue'], resolve
 const MeetingEdit = resolve => require(['../view/Main/MeetingEdit.vue'], resolve);
 const ArticleEdit = resolve => require(['../view/Main/ArticleEdit.vue'], resolve);
 const TripEdit = resolve => require(['../view/Main/TripEdit'], resolve);
+const SignDashboard = resolve => require(['../view/Main/SignDashboard'], resolve);
 
 Vue.use(Router);
 
@@ -28,6 +29,9 @@ export default new Router({
                 }, {
                     path: 'trip/edit',
                     component: TripEdit
+                }, {
+                    path: 'signDashboard',
+                    component: SignDashboard
                 }
             ]
         }, {

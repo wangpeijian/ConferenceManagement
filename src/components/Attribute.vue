@@ -219,7 +219,24 @@
 
                         <!--会议签到-->
                         <template v-if="entryItem.type === 'sign'">
+                            <router-link :to="`/main/signDashboard?mid=${mid}`">
+                                <el-button size="small" type="primary">签到统计</el-button>
+                            </router-link>
+                        </template>
 
+                        <!--座位表-->
+                        <template v-if="entryItem.type === 'seat'">
+                            <el-form-item label="文件列表" key="file">
+                                <el-upload
+                                    class="upload-demo"
+                                    :action="UPLOAD_FILE"
+                                    :data="{pid: mid}"
+                                    :on-success="seatUploadSuccess"
+                                    :on-remove="removeSeat"
+                                    :file-list="entryItem.fileList">
+                                    <el-button size="small" type="primary" v-if="entryItem.fileList.length === 0">点击上传</el-button>
+                                </el-upload>
+                            </el-form-item>
                         </template>
 
                     </el-form>
@@ -262,6 +279,9 @@
                     }, {
                         value: 'sign',
                         label: '签到'
+                    }, {
+                        value: 'seat',
+                        label: '座位表'
                     }]
                 }],
 
@@ -352,6 +372,32 @@
                 });
             },
             /*日程文件控制结束*/
+
+
+            seatUploadSuccess(res, file, fileList){
+                 const {Data: {Filename, Filepath, Id}} = res;
+
+                if(!this.entryItem.fileList){
+                    this.entryItem.fileList = [];
+                }
+
+                this.entryItem.fileList = [{
+                    name: file.name,
+                      url: Filepath,
+                      id: Id,
+                }];
+            },
+
+            removeSeat(file, fileList) {
+                this.$get(`HbfileDel?id=${this.entryItem.fileList[0].id}`).then(res => {
+                    if (res.Code === 200) {
+                        this.$showMsgTip(`删除成功`);
+                        this.entryItem.fileList = [];
+                    } else {
+                        this.$showErrorTip(`删除失败`)
+                    }
+                });
+            },
 
             checkDetail(){
                 this.$router.push(`/main/trip/edit?mid=${this.mid}`);

@@ -229,6 +229,10 @@ export default class {
             })
         };
 
+        Vue.prototype.$webSocket = function(url){
+            return new WebSocket(config.SOCKET + url);
+        };
+
         /**
          * 删除操作时的弹出框
          * 封装element的confirm弹出层

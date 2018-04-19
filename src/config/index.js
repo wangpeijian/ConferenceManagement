@@ -11,22 +11,24 @@ const isTest = () => {
 
 let def = {};
 
+const domain = `mt.guoanfamily.com`;
 let dev = {
-    INTERFACE: "http://mt.guoanfamily.com/handbook/",
-    UPLOAD_IMAGE: `http://mt.guoanfamily.com/handbook/imgupload`,
-    UPLOAD_EDITOR_IMAGE: `http://mt.guoanfamily.com/handbook/detailimgupload`,
-    UPLOAD_FILE: `http://mt.guoanfamily.com/handbook/HbfileSave`,
-    UPLOAD_TRIP: `http://mt.guoanfamily.com/handbook/ImportTrip`,
+    INTERFACE: `http://${domain}/handbook/`,
+    UPLOAD_IMAGE: `http://${domain}/handbook/imgupload`,
+    UPLOAD_EDITOR_IMAGE: `http://${domain}/handbook/detailimgupload`,
+    UPLOAD_FILE: `http://${domain}/handbook/HbfileSave`,
+    UPLOAD_TRIP: `http://${domain}/handbook/ImportTrip`,
+    SOCKET: `ws://${domain}/handbook/`
 };
 
 let test = {};
 
 let prod = {
-    INTERFACE: "http://mt.guoanfamily.com/handbook/",
-    UPLOAD_IMAGE: `http://mt.guoanfamily.com/handbook/imgupload`,
-    UPLOAD_EDITOR_IMAGE: `http://mt.guoanfamily.com/handbook/detailimgupload`,
-    UPLOAD_FILE: `http://mt.guoanfamily.com/handbook/HbfileSave`,
-    UPLOAD_TRIP: `http://mt.guoanfamily.com/handbook/ImportTrip`,
+    INTERFACE: `http://${domain}/handbook/`,
+    UPLOAD_IMAGE: `http://${domain}/handbook/imgupload`,
+    UPLOAD_EDITOR_IMAGE: `http://${domain}/handbook/detailimgupload`,
+    UPLOAD_FILE: `http://${domain}/handbook/HbfileSave`,
+    UPLOAD_TRIP: `http://${domain}/handbook/ImportTrip`,
 };
 
 let config = dev;

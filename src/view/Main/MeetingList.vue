@@ -53,18 +53,35 @@
         margin: 0 -20px 0 -20px;
     }
 
+    .list-item{
+        width: 200px;
+        margin: 0 20px 20px 20px;
+    }
+
     .meeting-item {
         width: 200px;
         border: 1px solid #ccc;
         border-radius: 10px;
         overflow: hidden;
         height: 200px;
-        margin: 0 20px 20px 20px;
+       /* margin: 0 20px 20px 20px;*/
         position: relative;
         padding: 10px;
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .tips{
+        font-size: 14px;
+        color: #fff;
+        text-align: center;
+        padding: 5px;
+        transition: .5s;
+    }
+
+    .list-item:hover .tips{
+        color: #409EFF;
     }
 
     .meeting-item:hover > .hover-content {
@@ -145,39 +162,41 @@
             </div>
 
             <div class="meetings-list">
+                <div class="list-item" v-for="item in meetingData" :key="item.Id">
+                    <div class="meeting-item">
+                        {{item.Hbname}}
+                        <div class="hover-content" @click="doEdit(item.Id)">
+                            <div class="btn-box">
+                                <el-tooltip class="item" effect="dark" content="发布" :enterable="false" placement="top">
+                                    <el-button icon="el-icon-upload" type="primary" circle
+                                               @click.stop.prevent="doRelease(item.Id)"></el-button>
+                                </el-tooltip>
+                            </div>
 
-                <div class="meeting-item" v-for="item in meetingData" :key="item.Id">
-                    {{item.Hbname}}
+                            <div class="btn-box">
+                                <el-tooltip class="item" effect="dark" content="预览" :enterable="false" placement="top">
+                                    <el-button icon="el-icon-view" type="success" circle
+                                               @click.stop.prevent="doPreview(item.Id)"></el-button>
+                                </el-tooltip>
+                            </div>
 
-                    <div class="hover-content" @click="doEdit(item.Id)">
-                        <div class="btn-box">
-                            <el-tooltip class="item" effect="dark" content="发布" :enterable="false" placement="top">
-                                <el-button icon="el-icon-upload" type="primary" circle
-                                           @click.stop.prevent="doRelease(item.Id)"></el-button>
-                            </el-tooltip>
-                        </div>
+                            <div class="btn-box">
+                                <el-tooltip class="item" effect="dark" content="复制" :enterable="false" placement="top">
+                                    <el-button icon="el-icon-document" type="warning" circle
+                                               @click.stop.prevent="doCopy(item.Id)"></el-button>
+                                </el-tooltip>
+                            </div>
 
-                        <div class="btn-box">
-                            <el-tooltip class="item" effect="dark" content="预览" :enterable="false" placement="top">
-                                <el-button icon="el-icon-view" type="success" circle
-                                           @click.stop.prevent="doPreview(item.Id)"></el-button>
-                            </el-tooltip>
-                        </div>
-
-                        <div class="btn-box">
-                            <el-tooltip class="item" effect="dark" content="复制" :enterable="false" placement="top">
-                                <el-button icon="el-icon-document" type="warning" circle
-                                           @click.stop.prevent="doCopy(item.Id)"></el-button>
-                            </el-tooltip>
-                        </div>
-
-                        <div class="btn-box">
-                            <el-tooltip class="item" effect="dark" content="删除" :enterable="false" placement="top">
-                                <el-button icon="el-icon-delete" type="danger" circle
-                                           @click.stop.prevent="doDelete(item.Id)"></el-button>
-                            </el-tooltip>
+                            <div class="btn-box">
+                                <el-tooltip class="item" effect="dark" content="删除" :enterable="false" placement="top">
+                                    <el-button icon="el-icon-delete" type="danger" circle
+                                               @click.stop.prevent="doDelete(item.Id)"></el-button>
+                                </el-tooltip>
+                            </div>
                         </div>
                     </div>
+
+                    <p class="tips">点击空白处编辑</p>
                 </div>
             </div>
 
