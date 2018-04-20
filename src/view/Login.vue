@@ -221,7 +221,8 @@
 
                             if(res.Code === 200 && res.Data){
 
-                                this.$setSession(this.KEYS.USER_ID, res.Data);
+                                this.$setSession(this.KEYS.USER_ID, res.Data.Id);
+                                this.$setSession(this.KEYS.USER_INFO, res.Data);
 
                                 if (this.remember) {
                                     this.$setStorage(this.KEYS.USER_ACCOUNT, {
