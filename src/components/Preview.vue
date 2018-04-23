@@ -109,9 +109,14 @@
             },
 
             iframeGoBack(){
-                if(!frames[0].location.hash.includes(this.url)){
+                try{
+                    if(!frames[0].location.hash.includes(this.url)){
+                        history.go(-1);
+                    }
+                }catch (e) {
                     history.go(-1);
                 }
+
             }
         },
 

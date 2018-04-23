@@ -6,13 +6,13 @@
         padding-right: 20px;
         max-width: 600px;
         min-width: 250px;
-        text-align: center;
     }
 
     .article-item {
         font-size: 14px;
         padding: 10px 0;
         color: #333;
+        position: relative;
     }
 
     .article-item:hover {
@@ -20,7 +20,22 @@
     }
 
     .btn-add {
-        margin-top: 10px;
+        margin: 10px auto 0 auto;
+        display: block;
+    }
+
+    .copy-btn {
+        color: #409EFF;
+        display: none;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+        text-decoration: underline;
+    }
+
+    .article-item:hover .copy-btn {
+        display: inline-block;
     }
 </style>
 
@@ -30,12 +45,14 @@
 
         <!--基本属性-->
         <el-card class="box-card">
-            <div  v-for="item in articleList" :key="item.id">
-                <router-link :to="`/main/article/edit?mid=${mid}&aid=${item.id}`">
-                    <div class="article-item">
-                        {{item.title}}
-                    </div>
-                </router-link>
+            <div v-for="item in articleList" :key="item.id">
+                <div class="article-item">
+                    <router-link :to="`/main/article/edit?mid=${mid}&aid=${item.id}`">
+                        <p>{{item.title}}</p>
+                    </router-link>
+
+                    <span class="copy-btn btn" :data-clipboard-text="`#/article?id=${item.id}`">复制</span>
+                </div>
             </div>
 
             <router-link :to="`/main/article/edit?mid=${mid}`">
@@ -46,6 +63,8 @@
 </template>
 
 <script>
+    import Clipboard from 'clipboard';
+
     export default {
         data() {
             return {
@@ -70,7 +89,10 @@
         },
 
         mounted() {
-
+            const clipboard = new Clipboard('.btn');
+            clipboard.on('success', (e) => {
+                this.$showMsgTip("复制成功")
+            });
         },
 
         methods: {},
