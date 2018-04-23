@@ -100,6 +100,10 @@
                 entryArray
             });
 
+            this.$store.commit('initCarouselArray', {
+                carouselArray: []
+            });
+
             const defaultEntry = entryArray;
             this.$get(`HandBookbyId?id=${this.mid}`).then(({Code, Msg, Data})=>{
                 let {
