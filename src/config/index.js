@@ -29,6 +29,7 @@ let prod = {
     UPLOAD_EDITOR_IMAGE: `http://${domain}/handbook/detailimgupload`,
     UPLOAD_FILE: `http://${domain}/handbook/HbfileSave`,
     UPLOAD_TRIP: `http://${domain}/handbook/ImportTrip`,
+    SOCKET: `ws://${domain}/handbook/`
 };
 
 let config = dev;
