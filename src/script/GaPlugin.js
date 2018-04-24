@@ -167,10 +167,14 @@ export default class {
         Vue.prototype.$get = function(url) {
 
             const id = this.$getSession(this.KEYS.USER_ID);
+            const headers = {"Content-Type": "application/json"};
+            if(id){
+                headers.Authorization = `Bearer:${id}`
+            }
 
             return fetch(config.INTERFACE + url, {
                 method: 'get',
-                headers: {"Content-Type": "application/json", "Authorization": `Bearer:${id}`},
+                headers: headers,
             }).then(function (response) {
                 return response.json();
             }).then(res => {
@@ -186,7 +190,7 @@ export default class {
 
                 return res;
             }).catch(function (e) {
-                console.error(e);
+                console.error("接口异常：",e);
                 this.$router.replace(`/login`)
             })
         };
@@ -203,10 +207,14 @@ export default class {
             let body = JSON.stringify(data);
 
             const id = this.$getSession(this.KEYS.USER_ID);
+            const headers = {"Content-Type": "application/json"};
+            if(id){
+                headers.Authorization = `Bearer:${id}`
+            }
 
             return fetch(requestUrl, {
                 method: 'post',
-                headers: {"Content-Type": "application/json", "Authorization": `Bearer:${id}`},
+                headers: headers,
                 body: body,
             }).then(function (response) {
                 return response.json();
@@ -224,7 +232,7 @@ export default class {
 
                 return res;
             }).catch(function (e) {
-                console.error(e);
+                console.error("接口异常：",e);
                 this.$router.replace(`/login`)
             })
         };
