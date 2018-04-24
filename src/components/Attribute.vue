@@ -219,9 +219,7 @@
 
                         <!--会议签到-->
                         <template v-if="entryItem.type === 'sign'">
-                            <router-link :to="`/main/signDashboard?mid=${mid}`">
-                                <el-button size="small" type="primary">签到统计</el-button>
-                            </router-link>
+                            <el-button size="small" type="primary" @click="checkSign">签到统计</el-button>
                         </template>
 
                         <!--座位表-->
@@ -400,7 +398,15 @@
             },
 
             checkDetail(){
-                this.$router.push(`/main/trip/edit?mid=${this.mid}`);
+                this.$showConfirm("确定已保存数据，以免数据丢失", ()=>{
+                    this.$router.push(`/main/trip/edit?mid=${this.mid}`);
+                });
+            },
+
+            checkSign(){
+                this.$showConfirm("确定已保存数据，以免数据丢失", ()=>{
+                    this.$router.push(`/main/signDashboard?mid=${this.mid}`);
+                });
             }
         },
 

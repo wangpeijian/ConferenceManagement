@@ -118,7 +118,7 @@
                     <el-button type="success" @click="previewDialogVisible = true">预览</el-button>
                     <el-button type="primary" @click="submit" :disabled="!form.name">保存</el-button>
                     <el-button type="danger" @click="remove" v-show="aid">删除</el-button>
-                    <el-button type="info" @click="()=>{this.$router.back()}">返回</el-button>
+                    <el-button type="info" @click="goback">返回</el-button>
                 </footer>
             </div>
 
@@ -186,8 +186,6 @@
                 form: {
                     name: '',
                 },
-
-                previewUrl: `#/article?id=${this.$route.query.aid}&uid=${this.$getSession(this.KEYS.USER_ID)}`,
             }
         },
 
@@ -274,6 +272,12 @@
                 });
             },
 
+            goback(){
+                this.$showConfirm("确定已保存数据，以免数据丢失", ()=>{
+                    this.$router.back()
+                });
+            },
+
            async link(aid) {
                 if(aid === this.aid){
                     return
@@ -307,6 +311,10 @@
         computed: {
             articleList() {
                 return this.$store.state.attribute.articleList;
+            },
+
+            previewUrl(){
+                return `#/article?id=${this.aid}&uid=${this.$getSession(this.KEYS.USER_ID)}`;
             }
         },
 

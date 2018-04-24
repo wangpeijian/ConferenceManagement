@@ -49,7 +49,7 @@
         <footer class="footer">
             <el-button type="success" @click="previewDialogVisible = true">预览</el-button>
             <el-button type="primary" @click="submit" :disabled="!form.name">保存</el-button>
-            <el-button type="info" @click="()=>{this.$router.back()}">返回</el-button>
+            <el-button type="info" @click="goback">返回</el-button>
         </footer>
 
         <!--预览提示框-->
@@ -149,6 +149,12 @@
                         this.$showErrorTip(`保存失败`)
                     }
                 })
+            },
+
+            goback(){
+                this.$showConfirm("确定已保存数据，以免数据丢失", ()=>{
+                    this.$router.back()
+                });
             }
         },
 

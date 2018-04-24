@@ -278,6 +278,30 @@ export default class {
         };
 
         /**
+         * 展示确认操作提示框
+         * @param msg
+         * @param cb
+         * @param type
+         */
+        Vue.prototype.$showConfirm = function(msg, cb = ()=>{}, type = 'warning'){
+            this.$confirm(msg, '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: type
+            }).then(() => {
+                cb();
+            }).catch(()=>{
+                this.$message({
+                    message: "取消操作",
+                    type: 'info',
+                    customClass: 'form-error',
+                    showClose: true,
+                    duration: 2000,
+                });
+            });
+        };
+
+        /**
          * 获取展示文件的url
          * @param fileName
          * @param w
