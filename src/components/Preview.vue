@@ -12,8 +12,8 @@
 
 <style scoped>
     .iphone-box {
-        height: 805px;
-        width: 410px;
+        height: 750px;
+        width: 370px;
         margin: 0 auto;
         background-size: contain;
         background-repeat: no-repeat;
@@ -22,17 +22,17 @@
 
     .webview {
         position: absolute;
-        top: 177px;
-        left: 45px;
-        width: 317px;
-        height: 510px;
+        top: 145px;
+        left: 27px;
+        width: 315px;
+        height: 504px;
     }
 
     .navigation{
         position: absolute;
-        top: 141px;
-        width: 317px;
-        left: 45px;
+        top: 110px;
+        width: 315px;
+        left: 27px;
         height: 35px;
         background: #ff5073;
         text-align: center;

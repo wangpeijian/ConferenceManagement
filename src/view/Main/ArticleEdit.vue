@@ -115,7 +115,7 @@
                 <froala class="editor-box" v-if="config" :tag="'textarea'" :config="config" v-model="model"></froala>
 
                 <footer class="footer">
-                    <el-button type="success" @click="previewDialogVisible = true">预览</el-button>
+                    <el-button type="success" :disabled="!aid" @click="previewDialogVisible = true">预览</el-button>
                     <el-button type="primary" @click="submit" :disabled="!form.name">保存</el-button>
                     <el-button type="danger" @click="remove" v-show="aid">删除</el-button>
                     <el-button type="info" @click="goback">返回</el-button>
