@@ -163,7 +163,7 @@
                     height: 480,
                     width: '100%',
                     direction: 'ltr',
-                    toolbarButtons: ['fullscreen', '|', 'insertLink', 'insertImage', 'insertTable', '|',
+                    toolbarButtons: ['fullscreen', '|', 'insertLink', 'insertImage','insertVideo', 'insertTable', '|',
                         'quote', 'insertHR', 'subscript', 'superscript', 'undo', 'redo', '|', 'bold', 'italic',
                         'underline', 'strikeThrough', '|', 'fontFamily', '|', 'fontSize', '|', 'color', 'emoticons',
                         'inlineStyle', '|', 'paragraphFormat', '|', 'paragraphStyle', 'align', 'formatOL', 'formatUL',
@@ -171,6 +171,7 @@
                     allowedImageTypes: ["jpeg", "jpg", "png", "gif"],
                     imageAllowedTypes: ['jpeg', 'jpg', 'png', 'gif'],
                     imageUploadURL: UPLOAD_EDITOR_IMAGE,
+                    videoUploadURL: UPLOAD_EDITOR_IMAGE,
                     events: {
                         'froalaEditor.initialized': (e, editor) => {
                             this.$editor = editor;
