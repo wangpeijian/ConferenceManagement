@@ -6,9 +6,12 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import store from './store';
+import VueQrcode from '@xkeshi/vue-qrcode'
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
+
+Vue.component('qrcode', VueQrcode);
 
 //安装自定义组件
 import GaPlugin from './script/GaPlugin'
