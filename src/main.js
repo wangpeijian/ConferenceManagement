@@ -33,7 +33,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Require Froala Editor js file.
-require('froala-editor/js/froala_editor.pkgd.min')
+require('../static/froala_editor.pkgd.min')
 require('froala-editor/js/languages/zh_cn')
 
 // Require Froala Editor css files.
