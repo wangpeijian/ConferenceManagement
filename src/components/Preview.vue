@@ -74,7 +74,7 @@
                         frameborder="0" width="262px" height="424px"></iframe>
 
                 <div class="qrcode">
-                    <qrcode :value="`http://mt.guoanfamily.com/meetWap/${url}`" :options="{ size: 150 }"></qrcode>
+                    <qrcode :value="`http://mt.guoanfamily.com/meetWap/${reallyUrl}`" :options="{ size: 150 }"></qrcode>
                     <el-alert
                         title="扫描二维码在手机上预览"
                         type="info"
@@ -143,7 +143,11 @@
             }
         },
 
-        computed: {},
+        computed: {
+            reallyUrl(){
+                return this.url.replace(/&uid=\d*/, "");
+            }
+        },
 
         components: {
         },
