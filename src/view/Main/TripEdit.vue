@@ -71,22 +71,20 @@
                 tripData: [],
                 selectColumn: {
                     Companyname: {name: '公司名称', select: true},
-                    Username: {name: '姓名', select: true},
-                    Trainclass: {name: '培训班级', select: true},
-                    Group: {name: '分组', select: true},
                     Department: {name: '部门', select: true},
-                    Station: {name: '岗位', select: true},
-                    Phonenum: {name: '联系方式', select: true},
+                    Username: {name: '姓名', select: true},
+                    Activities: {name: '活动事项', select: true},
                     Sex: {name: '性别', select: true},
-                    Roompairnum: {name: '房间配对标号', select: true},
-                    Roomnum: {name: '住宿房间', select: true},
-                    Staycontactperson: {name: '住宿联系人', select: true},
-                    Cometime: {name: '来程时间', select: true},
-                    Shuttlebatch: {name: '接送批次', select: true},
+                    Phonenum: {name: '联系方式', select: true},
+                    Stayinfo: {name: '住宿信息', select: true},
+                    Cometime: {name: '入住时间', select: true},
+                    Roomnum: {name: '入住房间', select: true},
+                    Roomtype: {name: '房间类型', select: true},
+                    Cometripinfo: {name: '来程行程信息', select: true},
                     Comecontactpersion: {name: '来程联系人', select: true},
-                    Backtime: {name: '回程时间', select: true},
-                    Shuttlebatchback: {name: '接送批次', select: true},
+                    Backtripinfo: {name: '回程行程信息', select: true},
                     Backcontactperson: {name: '回程联系人', select: true},
+                    Sepacialinfo: {name: '特殊事项', select: true},
                 },
             }
         },
@@ -103,7 +101,12 @@
             init() {
                 this.$get(`TrainShowCol?pid=${this.mid}`).then(res => {
                     if (res.Data.length) {
-                        this.selectColumn = JSON.parse(res.Data[0].Showcolname);
+                        const Showcolname = JSON.parse(res.Data[0].Showcolname);
+                        for(const key in Showcolname){
+                            if(key && this.selectColumn[key]){
+                                this.selectColumn[key].select = Showcolname[key].select;
+                            }
+                        }
                     }
                 });
 
