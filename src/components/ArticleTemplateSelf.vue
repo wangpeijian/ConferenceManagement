@@ -169,7 +169,6 @@
             },
 
             async publish(id, val) {
-                console.info("val:", val);
                 await this.$get(`HtmlTempShare?shared=${val ? 1 : 0}&id=${id}`);
                 this.$showMsgTip("操作成功");
             },
