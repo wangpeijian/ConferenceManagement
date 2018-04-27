@@ -6,6 +6,11 @@
         padding-right: 20px;
         max-width: 600px;
         min-width: 250px;
+        height: 500px;
+    }
+
+    .box-card{
+        overflow: auto;
     }
 
     .article-item {
@@ -83,7 +88,7 @@
                 });
 
                 this.$store.commit("initArticleList", {
-                    articleList,
+                    articleList
                 });
             })
         },

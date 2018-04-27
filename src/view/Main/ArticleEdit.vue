@@ -10,9 +10,13 @@
 
     .tab-aside {
         flex-grow: 1;
-        max-width: 300px;
-        min-width: 300px;
+        width: 320px;
         padding-right: 20px;
+    }
+
+    .article-list{
+        height: 500px;
+        overflow: auto;
     }
 
     .article-item {
@@ -28,11 +32,11 @@
         cursor: pointer;
     }
 
-    .link-btn:hover{
+    .link-btn:hover {
         color: #409EFF;
     }
 
-    .link-btn.active{
+    .link-btn.active {
         color: #409EFF;
     }
 
@@ -74,7 +78,7 @@
         padding: 20px;
     }
 
-    .btn-add{
+    .btn-add {
         display: block;
         margin: 10px auto;
     }
@@ -94,15 +98,27 @@
                     <el-tab-pane label="样式" name="style">
                         <styleTemplate @insertStyle="insertStyle"/>
                     </el-tab-pane>
+
                     <el-tab-pane label="文章" name="article">
-                        <div v-for="item in articleList" :key="item.id" class="article-item">
-                            <span class="link-btn" :class="{active: item.id === aid}" @click="link(item.id)">{{item.title}}</span>
+                        <div class="article-list">
+                            <div v-for="item in articleList" :key="item.id" class="article-item">
+                                <span class="link-btn" :class="{active: item.id === aid}" @click="link(item.id)">{{item.title}}</span>
 
-                            <span class="copy-btn btn" :data-clipboard-text="`#/article?id=${item.id}`">复制</span>
-                            <span class="insert-btn" @click="insertArticle(item.id, item.title)">插入</span>
+                                <span class="copy-btn btn" :data-clipboard-text="`#/article?id=${item.id}`">复制</span>
+                                <span class="insert-btn" @click="insertArticle(item.id, item.title)">插入</span>
+                            </div>
+
+                            <el-button class="btn-add" type="primary" size="mini" icon="el-icon-plus" circle
+                                       @click="addNew"></el-button>
                         </div>
+                    </el-tab-pane>
 
-                        <el-button class="btn-add" type="primary" size="mini" icon="el-icon-plus" circle @click="addNew"></el-button>
+                    <el-tab-pane label="私人模板" name="self-template">
+                        <articleTemplateSelf v-if="activeName === 'self-template'" @insertTemplate="insertTemplate"/>
+                    </el-tab-pane>
+
+                    <el-tab-pane label="公共模板" name="public-template">
+                        <articleTemplatePublic v-if="activeName === 'public-template'" @insertTemplate="insertTemplate"/>
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -117,6 +133,7 @@
                 <footer class="footer">
                     <el-button type="success" :disabled="!aid" @click="previewDialogVisible = true">预览</el-button>
                     <el-button type="primary" @click="submit" :disabled="!form.name">保存</el-button>
+                    <el-button type="warn" @click="addTemplateDialogVisible = true" :disabled="!model">保存为模板</el-button>
                     <el-button type="danger" @click="remove" v-show="aid">删除</el-button>
                     <el-button type="info" @click="goback">返回</el-button>
                 </footer>
@@ -124,13 +141,28 @@
 
         </div>
 
-        <!--<el-form class="form-box" ref="form" :model="form" label-width="80px">
-            <el-form-item label="文章标题">
+        <!--另存为模板提示框-->
+        <el-dialog
+            title="另存为模板"
+            :visible.sync="addTemplateDialogVisible"
+            width="30%"
+        >
 
-            </el-form-item>
-        </el-form>-->
+            <el-form label-width="80px">
+                <el-form-item label="模板名称">
+                    <el-input
+                        class="add-input"
+                        placeholder="请输入模板名称"
+                        v-model="templateName"
+                    >
+                    </el-input>
+                </el-form-item>
+            </el-form>
 
-
+            <span slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="saveAsTemplate" :disabled="!templateName">确 定</el-button>
+            </span>
+        </el-dialog>
 
         <!--预览提示框-->
         <preview :previewDialogVisible="previewDialogVisible" :url="previewUrl" @close="previewDialogVisible = false"/>
@@ -140,7 +172,9 @@
 <script>
     import preview from '../../components/Preview'
     import styleTemplate from '../../components/StyleTemplate';
-    import VueFroala from 'vue-froala-wysiwyg';
+    import articleTemplateSelf from '../../components/ArticleTemplateSelf';
+    import articleTemplatePublic from '../../components/ArticleTemplatePublic';
+
     import Clipboard from 'clipboard';
 
     export default {
@@ -163,11 +197,11 @@
                     height: 480,
                     width: '100%',
                     direction: 'ltr',
-                    toolbarButtons: ['fullscreen', '|', 'insertLink', 'insertImage','insertVideo', 'insertTable', '|',
+                    toolbarButtons: ['html', 'fullscreen', '|', 'insertLink', 'insertImage', 'insertVideo', 'insertTable', '|',
                         'quote', 'insertHR', 'subscript', 'superscript', 'undo', 'redo', '|', 'bold', 'italic',
                         'underline', 'strikeThrough', '|', 'fontFamily', '|', 'fontSize', '|', 'color', 'emoticons',
                         'inlineStyle', '|', 'paragraphFormat', '|', 'paragraphStyle', 'align', 'formatOL', 'formatUL',
-                        'outdent', 'indent', 'clearFormatting', 'insertimg'],
+                        'outdent', 'indent', 'clearFormatting', 'insertimg', 'lineHeight'],
                     allowedImageTypes: ["jpeg", "jpg", "png", "gif"],
                     imageAllowedTypes: ['jpeg', 'jpg', 'png', 'gif'],
                     imageUploadURL: UPLOAD_EDITOR_IMAGE,
@@ -175,7 +209,6 @@
                     events: {
                         'froalaEditor.initialized': (e, editor) => {
                             this.$editor = editor;
-                            // editor.html.insert(`<a href="#/main/">文章</a>`, true)
                         },
                     }
                 },
@@ -187,10 +220,14 @@
                 form: {
                     name: '',
                 },
+
+                templateName: '',
+                addTemplateDialogVisible: false,
             }
         },
 
         created() {
+            this.extendEditor();
             this.initDetail();
             this.initArticleList();
         },
@@ -203,6 +240,33 @@
         },
 
         methods: {
+            //扩展编辑器功能
+            extendEditor() {
+                $.FroalaEditor.DefineIcon('lineHeight', {NAME: 'arrows-v'});
+                $.FroalaEditor.RegisterCommand('lineHeight', {
+                    title: '设置行高',
+                    focus: true,
+                    undo: true,
+                    type: 'dropdown',
+                    refreshAfterCallback: true,
+                    options: (function () {
+                        const options = {};
+                        for (let i = 12; i <= 80; i = i + 2) {
+                            options[`${i}`] = `${i}`
+                        }
+                        return options;
+                    })(),
+                    callback: function (cmd, val) {
+                        let selected = this.html.getSelected();
+                        if (selected) {
+                            selected = selected.replace(/line-height:\s?\d+px;/g, "");
+                            selected = selected.replace(/<\/?span[\s]*[style=""]*>/g, "");
+                            this.html.insert(`<span style="line-height: ${val}px">${selected}</span>`);
+                        }
+                    },
+                });
+            },
+
             initDetail() {
                 if (this.aid) {
                     this.$get(`HandBookDetailbyId?id=${this.aid}`).then(res => {
@@ -212,14 +276,14 @@
                             this.model = Pagedetail;
                         }
                     })
-                }else{
+                } else {
                     this.form.name = "";
                     this.model = "";
                 }
             },
 
-            initArticleList(){
-                return this.$get(`HandBookDetailList?pid=${this.mid}`).then(res=>{
+            initArticleList() {
+                return this.$get(`HandBookDetailList?pid=${this.mid}`).then(res => {
                     const {Data} = res;
                     const articleList = Data.map(item => {
                         return {
@@ -235,7 +299,7 @@
             },
 
             submit() {
-                if(!this.form.name){
+                if (!this.form.name) {
                     this.$showErrorTip("请输入文章标题");
                     return;
                 }
@@ -248,11 +312,11 @@
                 }).then(res => {
                     if (res.Code === 200) {
                         this.$showMsgTip(`保存成功`);
-                        this.link(res.Data);
+                        this.link(res.Data, false);
                     } else {
                         this.$showErrorTip(`保存失败`);
                     }
-                })
+                });
             },
 
             remove() {
@@ -260,10 +324,10 @@
                     this.$get(`HandBookDetailDel?id=${this.aid}`).then(res => {
                         if (res.Code === 200) {
                             this.initArticleList().then(() => {
-                                if(this.articleList.length === 0){
+                                if (this.articleList.length === 0) {
                                     this.$router.go(-1);
-                                }else{
-                                    this.link(this.articleList[0].id);
+                                } else {
+                                    this.link(this.articleList[0].id, false);
                                 }
                             });
                         } else {
@@ -273,24 +337,32 @@
                 });
             },
 
-            goback(){
-                this.$showConfirm("确定已保存数据，以免数据丢失", ()=>{
+            goback() {
+                this.$showConfirm("确定已保存数据，以免数据丢失", () => {
                     this.$router.back()
                 });
             },
 
-           async link(aid) {
-                if(aid === this.aid){
+            async link(aid, confirm = true) {
+                if (aid === this.aid) {
                     return
                 }
 
-                this.aid = aid;
-                this.initDetail();
-                await this.initArticleList();
-                this.$router.replace(`/main/article/edit?mid=${this.mid}&aid=${aid}`);
+                const callback = async () => {
+                    this.aid = aid;
+                    this.initDetail();
+                    await this.initArticleList();
+                    this.$router.replace(`/main/article/edit?mid=${this.mid}&aid=${aid}`);
+                };
+
+                if (confirm) {
+                    this.$showConfirm("确定已保存数据，以免数据丢失", callback);
+                } else {
+                    callback();
+                }
             },
 
-            async addNew(){
+            async addNew() {
                 this.aid = "";
                 this.initDetail();
                 this.$router.replace(`/main/article/edit?mid=${this.mid}`);
@@ -304,8 +376,34 @@
                 this.insertHTML(content);
             },
 
+            insertTemplate(html) {
+                this.insertHTML(html)
+            },
+
             insertHTML(html) {
-                this.$editor.html.insert(html, true)
+                this.$editor.html.insert(html, true);
+            },
+
+            //另存为模板
+            async saveAsTemplate() {
+                const {name} = this.$getSession(this.KEYS.USER_INFO);
+                await this.$post(`SaveHtmlTemp`, {
+                    Id: 0,
+                    Shared: 0,
+                    Tempname: this.templateName,
+                    Hbhtmltemp: this.model,
+                    Createname: name,
+                }).then(res => {
+                    if (res.Code === 200) {
+                        this.$showMsgTip(`保存成功`);
+                    } else {
+                        this.$showErrorTip(`保存失败`);
+                    }
+                });
+
+                this.$broadcast(this.EVENTS.RELOAD_ARTICLE_TEMPLATE_LIST, "ArticleEdit");
+
+                this.addTemplateDialogVisible = false;
             }
         },
 
@@ -314,7 +412,7 @@
                 return this.$store.state.attribute.articleList;
             },
 
-            previewUrl(){
+            previewUrl() {
                 return `#/article?id=${this.aid}&uid=${this.$getSession(this.KEYS.USER_ID)}`;
             }
         },
@@ -322,6 +420,8 @@
         components: {
             styleTemplate,
             preview,
+            articleTemplateSelf,
+            articleTemplatePublic,
         }
     }
 </script>

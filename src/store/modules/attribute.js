@@ -2,14 +2,12 @@ export default {
     state: {
         objectType: '',     //entry  carousel
 
-        entryArray: [],
-        entryIndex: 0,
+        entryArray: [],         //入口列表
+        entryIndex: 0,          //入口序号
 
-        carouselArray: [],
+        carouselArray: [],      //轮播图列表
 
-        articleList: [],
-
-
+        articleList: [],        //文章列表
     },
     mutations: {
         initArticleList(state, {articleList}){

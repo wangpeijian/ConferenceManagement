@@ -3,13 +3,12 @@
  */
 
 //保存所有的广播事件
-window.EVENT_STORAGE = window.EVENT_STORAGE === undefined ? {} : window.EVENT_STORAGE;
 import {config} from '../config';
 
 export default class {
 
     constructor() {
-
+        window.EVENT_STORAGE = window.EVENT_STORAGE || {};
     }
 
     install(Vue, options) {
@@ -77,7 +76,8 @@ export default class {
 
         //定义全局事件
         Vue.prototype.EVENTS = {
-            UPDATE_MENU_ACTIVE: 'UPDATE_MENU_ACTIVE' //页面路由改变时，更新菜单的展开项目
+            UPDATE_MENU_ACTIVE: 'UPDATE_MENU_ACTIVE', //页面路由改变时，更新菜单的展开项目
+            RELOAD_ARTICLE_TEMPLATE_LIST: 'RELOAD_ARTICLE_TEMPLATE_LIST'  //重新加载文章模版列表
         };
 
         /**
@@ -331,39 +331,47 @@ export default class {
          * @param owner
          * @param cb
          */
-        Vue.prototype.$subscribe = (eventName, owner, cb) => {
-            let queue = window.EVENT_STORAGE[eventName];
-
-            if (queue === undefined) {
-                queue = [];
-            }
+        Vue.prototype.$subscribe = function(eventName, owner, cb) {
+            const queue = window.EVENT_STORAGE[eventName] || [];
+            const register = window.EVENT_STORAGE.__REGISTER || new WeakMap();
 
             queue.push({
+                _this: this,
                 owner: owner,
                 cb: cb,
             });
 
+            let eventSet;
+            if(register.has(this)){
+                eventSet = register.get(this)
+            }else {
+                eventSet = new Set();
+            }
+            eventSet.add(eventName);
+            register.set(this, eventSet);
+
+            window.EVENT_STORAGE.__REGISTER = register;
             window.EVENT_STORAGE[eventName] = queue;
         };
 
         /**
          * 订阅者取消订阅消息（用于组件间通信）
-         *
-         * @param eventName
-         * @param owner
-         * @returns {boolean}
          */
-        Vue.prototype.$unsubscribe = (eventName, owner) => {
-            let queue = window.EVENT_STORAGE[eventName];
-
-            if (queue === undefined) {
-                console.warn(`取消订阅事件失败：${eventName},事件不存在`);
-                return false;
+        Vue.prototype.$unsubscribe = function(){
+            const register = window.EVENT_STORAGE.__REGISTER;
+            if(!register){
+                return
             }
 
-            window.EVENT_STORAGE[eventName] = queue.filter(obj => {
-                return obj.owner !== owner;
-            });
+            const eventSet = register.get(this);
+            if(eventSet){
+                eventSet.forEach(key => {
+                    const queue = window.EVENT_STORAGE[key] || [];
+                    window.EVENT_STORAGE[key] = queue.filter(obj => obj._this !== this);
+                });
+
+                register.delete(this)
+            }
         };
 
         /**
@@ -374,7 +382,7 @@ export default class {
          * @param parameter
          * @param cb
          */
-        Vue.prototype.$broadcast = (eventName, sender, parameter, cb) => {
+        Vue.prototype.$broadcast = (eventName, sender, parameter = {}, cb) => {
             let queue = window.EVENT_STORAGE[eventName];
             console.group("广播消息：", eventName);
 
@@ -455,6 +463,10 @@ export default class {
 
     /*------------------安装mixin方法------------------*/
     installMixin(Vue) {
-
+        Vue.mixin({
+            beforeDestroy: function() {
+                this.$unsubscribe();
+            }
+        })
     }
 };

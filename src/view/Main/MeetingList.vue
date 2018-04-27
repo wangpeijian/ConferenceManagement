@@ -240,17 +240,6 @@
                     >
                     </el-input>
                 </el-form-item>
-
-                <!--<el-form-item label="复制首页">
-                    <el-select v-model="copyId" clearable placeholder="请选择要复制的会议">
-                        <el-option
-                            v-for="item in meetingData"
-                            :key="item.Id"
-                            :label="item.Hbname"
-                            :value="item.Id">
-                        </el-option>
-                    </el-select>
-                </el-form-item>-->
             </el-form>
 
             <span slot="footer" class="dialog-footer">
