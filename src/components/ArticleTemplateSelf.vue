@@ -103,8 +103,6 @@
                 </el-form-item>
             </el-form>
 
-            <p style="color: #f56c6c; font-size: 12px">* 相同名称的模板会被覆盖</p>
-
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="rename" :disabled="!templateName">确 定</el-button>
             </span>
@@ -164,9 +162,15 @@
             },
 
             async rename(){
-                await this.$get(`HtmlTempRename?name=${this.templateName}&id=${this.templateId}`);
-                this.getList();
-                this.renameVisible = false;
+                const res = await this.$get(`HtmlTempRename?name=${this.templateName}&id=${this.templateId}`);
+
+                if(res.Data){
+                    this.$showMsgTip("操作成功");
+                    this.getList();
+                    this.renameVisible = false;
+                }else {
+                    this.$showMsgTip("该模版名称已存在", "error");
+                }
             },
 
             remove(id) {
