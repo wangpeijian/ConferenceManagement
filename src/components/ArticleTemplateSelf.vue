@@ -52,7 +52,14 @@
 
 <template>
     <div class="page">
-        <!--基本属性-->
+
+        <el-input
+            placeholder="请输入模板名称"
+            v-model="search"
+            @input="getList"
+        >
+        </el-input>
+
         <el-card>
             <div v-for="item in templateList" :key="item.id">
                 <div class="template-group">
@@ -66,12 +73,11 @@
                             删除
                         </span>
                         <span>
-                        <el-switch
-                            v-model="item.public"
-                            active-text="公开"
-                            inactive-text="私有"
-                            @change="(val)=> publish(item.id, val)"
-                        >
+                            共享
+                            <el-switch
+                                v-model="item.public"
+                                @change="(val)=> publish(item.id, val)"
+                            >
                         </el-switch>
                     </span>
                     </div>
@@ -96,6 +102,8 @@
                     </el-input>
                 </el-form-item>
             </el-form>
+
+            <p style="color: #f56c6c; font-size: 12px">* 相同名称的模板会被覆盖</p>
 
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="rename" :disabled="!templateName">确 定</el-button>

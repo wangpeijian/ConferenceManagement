@@ -159,6 +159,8 @@
                 </el-form-item>
             </el-form>
 
+           <p style="color: #f56c6c; font-size: 12px">* 相同名称的模板会被覆盖</p>
+
             <span slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="saveAsTemplate" :disabled="!templateName">确 定</el-button>
             </span>

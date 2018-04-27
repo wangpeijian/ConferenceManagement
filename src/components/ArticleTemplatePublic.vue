@@ -35,7 +35,14 @@
 
 <template>
     <div class="page">
-        <!--基本属性-->
+
+        <el-input
+            placeholder="请输入模板名称"
+            v-model="search"
+            @input="getList"
+        >
+        </el-input>
+
         <el-card>
             <div v-for="item in templateList" :key="item.id">
                 <div class="template-item" @click="add(item.id)">
