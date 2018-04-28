@@ -211,7 +211,7 @@
                     events: {
                         'froalaEditor.initialized': (e, editor) => {
                             this.$editor = editor;
-                        },
+                        }
                     }
                 },
 
@@ -301,6 +301,11 @@
             },
 
             submit() {
+                let contentHTML = this.model;
+                if($("button[data-cmd='html']")[0].className.includes("fr-active")){
+                    contentHTML = $(".fr-code")[0].value
+                }
+
                 if (!this.form.name) {
                     this.$showErrorTip("请输入文章标题");
                     return;
@@ -310,7 +315,7 @@
                     Id: this.aid ? ~~this.aid : 0,
                     Pid: ~~this.mid,
                     Pagename: this.form.name,
-                    Pagedetail: this.model,
+                    Pagedetail: contentHTML,
                 }).then(res => {
                     if (res.Code === 200) {
                         this.$showMsgTip(`保存成功`);
